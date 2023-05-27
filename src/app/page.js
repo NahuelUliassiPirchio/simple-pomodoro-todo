@@ -1,11 +1,16 @@
 'use client'
 
+import NavBar from '@/components/NavBar'
 import styles from './page.module.css'
-import authService from '@/services/authService'
+import TodoListItem from '@/components/TodoListItem'
 
 export default function Home () {
-  authService()
   return (
-    <main className={styles.main} />
+    <>
+      <NavBar />
+      <main className={styles.main}>
+        <TodoListItem />
+      </main>
+    </>
   )
 }
