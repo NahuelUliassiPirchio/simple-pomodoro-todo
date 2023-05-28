@@ -1,5 +1,5 @@
 import { GoogleAuthProvider, signInWithPopup, getAuth, signOut } from 'firebase/auth'
-import app from '../firebase/firebaseInit'
+import { app } from '../firebase/firebaseInit'
 
 const provider = new GoogleAuthProvider()
 // console.log(app.options)

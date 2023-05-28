@@ -1,3 +1,5 @@
+'use client'
+
 import { Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
 
 export default function NavBar () {

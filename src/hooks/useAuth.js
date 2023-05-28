@@ -24,6 +24,7 @@ const useAuth = () => {
       // The signed-in user info.
       const user = result.user
       // IdP data available using getAdditionalUserInfo(result)
+      // TODO: Handle successful sign-in
 
       console.log({ token, user })
     } catch (error) {
@@ -48,7 +49,7 @@ const useAuth = () => {
       await authService.signOut()
       // TODO: Handle successful sign-out
     } catch (error) {
-      // Handle sign-out error
+      // TODO: Handle sign-out error
     }
   }
 
