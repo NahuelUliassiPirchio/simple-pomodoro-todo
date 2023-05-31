@@ -1,7 +1,6 @@
 'use client'
 
 import { deleteData, updateData } from '@/services/dbService'
-import { reload } from 'firebase/auth'
 import { useEffect, useId, useState } from 'react'
 import { Button, Form, ListGroupItem } from 'react-bootstrap'
 
@@ -44,23 +43,21 @@ export default function TodoListItem ({ todo }) { // TODO: apply reducer pattern
   }, [checked, todo.id, todo.text])
 
   return (
-    <ListGroupItem>
-      <div className='mb-3'>
-        <Form.Check type='checkbox' id={checkboxId}>
-          <Form.Check.Input type='checkbox' isValid checked={checked} onChange={() => setChecked(!checked)} />
-          {
+    <ListGroupItem as='li'>
+      <Form.Check type='checkbox' id={checkboxId}>
+        <Form.Check.Input type='checkbox' className='cursor-pointer' isValid checked={checked} onChange={() => setChecked(!checked)} />
+        {
             showEdit
               ? <Form.Control type='text' defaultValue={todo.text} onKeyDown={handleEdit} />
 
               : <Form.Check.Label className={checked && 'text-decoration-line-through'}>{todo.text}</Form.Check.Label>
           }
-          <Form.Control.Feedback type='valid'>
-            {checked && 'You did it!'}
-          </Form.Control.Feedback>
-        </Form.Check>
-        <Button variant='danger' className='float-end' onClick={handleDelete}>Delete</Button>
-        <Button variant='primary' className='float-end me-2' onClick={() => setShowEdit(true)}>Edit</Button>
-      </div>
+        <Form.Control.Feedback type='valid'>
+          {checked && 'You did it!'}
+        </Form.Control.Feedback>
+      </Form.Check>
+      <Button variant='danger' className='float-end' onClick={handleDelete}>Delete</Button>
+      <Button variant='primary' className='float-end me-2' onClick={() => setShowEdit(true)}>Edit</Button>
     </ListGroupItem>
   )
 }

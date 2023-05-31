@@ -1,9 +1,23 @@
 'use client'
 
-import { Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
+import { Button, Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
+
+import { useAuthContext } from '@/contexts/authContext'
+import { signIn, signOut } from '@/services/authService'
 
 export default function NavBar () {
   const expand = 'sm'
+
+  const { user, loading } = useAuthContext()
+
+  const handleLogOut = async () => {
+    await signOut()
+  }
+
+  const handleSignIn = async () => {
+    await signIn()
+  }
+
   return (
     <Navbar as='header' bg='dark' variant='dark' expand={expand} className='mb-3'>
       <Container fluid>
@@ -26,6 +40,24 @@ export default function NavBar () {
             </Nav>
           </Offcanvas.Body>
         </Navbar.Offcanvas>
+        {
+          loading
+            ? (
+              <Button variant='outline-light' disabled>
+                <span className='spinner-border spinner-border-sm' role='status' aria-hidden='true' />
+                <span className='visually-hidden'>Loading...</span>
+              </Button>
+              )
+            : (
+                user
+                  ? (
+                    <Button variant='outline-light' className='ms-auto' size='sm' onClick={handleLogOut}>Log Out</Button>
+                    )
+                  : (
+                    <Button variant='light' className='ms-auto' size='sm' onClick={handleSignIn}>Sign In</Button>
+                    )
+              )
+        }
       </Container>
     </Navbar>
   )

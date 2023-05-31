@@ -19,6 +19,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "encoding": "^0.1.13",
     "standard": "^17.0.0"
   }
 }
