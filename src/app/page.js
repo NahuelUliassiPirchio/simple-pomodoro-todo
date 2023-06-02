@@ -1,8 +1,8 @@
 import NavBar from '@/components/NavBar'
 import TodoList from '@/components/TodoList'
-import NoteForm from '@/components/NoteForm'
 import styles from './page.module.css'
 import { AuthProvider } from '@/contexts/authContext'
+import NewTodo from '@/components/NewTodo'
 
 export default function Home () {
   return (
@@ -11,7 +11,7 @@ export default function Home () {
         <NavBar />
       </AuthProvider>
       <main className={styles.main}>
-        <NoteForm />
+        <NewTodo />
         <TodoList />
       </main>
     </>

@@ -8,7 +8,7 @@ export default async function TodoList () {
     <ul className='list-group'>
       {
         todos &&
-        todos.map(todo => <TodoListItem key={todo.id} todo={todo} />)
+        todos.map(todo => <TodoListItem key={todo.id} initialTodo={todo} />)
       }
     </ul>
   )

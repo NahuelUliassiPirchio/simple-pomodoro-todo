@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { Button, Form, Row } from 'react-bootstrap'
 import { addData } from '@/services/dbService'
 
-export default function NoteForm () {
+export default function NewTodo () {
   const noteRef = useRef()
 
   const handleSubmit = async (e) => {
@@ -12,11 +12,11 @@ export default function NoteForm () {
     console.log('submit')
 
     try {
-      const response = await addData('todos', {
+      await addData('todos', {
         text: noteRef.current.value,
         completed: false
       })
-      console.log(response)
+      noteRef.current.value = ''
     } catch (error) {
       console.log(error)
     }
@@ -25,7 +25,7 @@ export default function NoteForm () {
   return (
     <Form className='container mt-3 mb-3'>
       <Row>
-        <Form.Control type='text' className='form-control col col-lg-11"' placeholder='Note' ref={noteRef} />
+        <Form.Control type='text' className='form-control col col-lg-11"' placeholder='Todo' ref={noteRef} />
         <Button variant='primary' className='col col-lg-1' type='submit' onClick={handleSubmit}>
           Submit
         </Button>
