@@ -5,12 +5,15 @@ import { Alert } from 'react-bootstrap'
 import { getData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
 import { useAuthContext } from '@/contexts/authContext'
+import { useDataContext } from '@/contexts/dataContext'
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
   const { user, loading } = useAuthContext()
+  const { data } = useDataContext()
 
   useEffect(() => {
+    console.log(user)
     if (!user || loading) {
       return
     }
@@ -19,6 +22,17 @@ export default function TodoList () {
       setTodos(data)
     })
   }, [loading, user])
+
+  useEffect(() => {
+    if (!data) {
+      return
+    }
+    setTodos(prevTodos => {
+      const newTodos = new Set([...prevTodos, data])
+      return [...newTodos]
+    }
+    )
+  }, [data])
 
   if (!user && !loading) {
     return (

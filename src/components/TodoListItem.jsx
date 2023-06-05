@@ -12,7 +12,7 @@ export default function TodoListItem ({ initialTodo }) {
 
   return (
     <ListGroupItem as='li'>
-      <Form.Check type='checkbox' id={checkboxId}>
+      <Form.Check className='d-inline-block' type='checkbox' id={checkboxId}>
         <Form.Check.Input type='checkbox' className='cursor-pointer' isValid checked={todo.completed} onChange={handleCheck} />
         {
             showEdit
@@ -24,8 +24,10 @@ export default function TodoListItem ({ initialTodo }) {
           {todo.completed && 'You did it!'}
         </Form.Control.Feedback>
       </Form.Check>
-      <Button variant='danger' className='float-end' onClick={handleDelete}>Delete</Button>
-      <Button variant='primary' className='float-end me-2' onClick={handleEdit}>Edit</Button>
+      <div className='d-flex float-end gap-2 mt-1'>
+        <Button variant='primary' onClick={handleEdit}>Edit</Button>
+        <Button variant='danger' className='me-2' onClick={handleDelete}>Delete</Button>
+      </div>
       {error &&
       (
         <div class='alert alert-danger' role='alert'>
