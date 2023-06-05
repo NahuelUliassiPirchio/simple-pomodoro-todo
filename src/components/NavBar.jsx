@@ -4,6 +4,7 @@ import { Button, Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
 
 import { useAuthContext } from '@/contexts/authContext'
 import { signIn, signOut } from '@/services/authService'
+import UserAccount from './UserAccount'
 
 export default function NavBar () {
   const expand = 'sm'
@@ -51,7 +52,7 @@ export default function NavBar () {
             : (
                 user
                   ? (
-                    <Button variant='outline-light' className='ms-auto' size='sm' onClick={handleLogOut}>Log Out</Button>
+                    <UserAccount user={user} handleLogOut={handleLogOut} />
                     )
                   : (
                     <Button variant='light' className='ms-auto' size='sm' onClick={handleSignIn}>Sign In</Button>

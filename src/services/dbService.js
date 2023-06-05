@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore/lite'
+import { addDoc, collection, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore/lite'
 import { db } from '@/firebase/firebaseInit'
 
 export const addData = (path, data) => {
@@ -7,8 +7,9 @@ export const addData = (path, data) => {
   })
 }
 
-export const getData = async (path) => {
-  const response = await getDocs(collection(db, path))
+export const getData = async (path, userUID) => {
+  const querySnapshot = query(collection(db, path), where('owner', '==', userUID))
+  const response = await getDocs(querySnapshot)
   return response.docs.map(doc => {
     return {
       id: doc.id,
