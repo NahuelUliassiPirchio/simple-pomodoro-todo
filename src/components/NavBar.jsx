@@ -16,13 +16,17 @@ export default function NavBar () {
   }
 
   const handleSignIn = async () => {
-    await signIn()
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    console.log(isMobile)
+    await signIn(isMobile)
   }
 
   return (
     <Navbar as='header' bg='dark' variant='dark' expand={expand} className='mb-3'>
       <Container fluid>
-        <Navbar.Brand href='#'>Navbar Offcanvas</Navbar.Brand>
+        <Navbar.Brand href=''>
+          Simpl Todo + Pomodoro 🍅
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
         <Navbar.Offcanvas
           id={`offcanvasNavbar-expand-${expand}`}

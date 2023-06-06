@@ -1,11 +1,15 @@
-import { GoogleAuthProvider, signInWithPopup, getAuth, signOut as firebaseSignOut } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup, getAuth, signOut as firebaseSignOut, signInWithRedirect } from 'firebase/auth'
 import { app } from '../firebase/firebaseInit'
 
 const provider = new GoogleAuthProvider()
 export const auth = getAuth(app)
 
-const signIn = () => {
-  return signInWithPopup(auth, provider)
+const signIn = (isMobile) => {
+  if (isMobile) {
+    return signInWithRedirect(auth, provider)
+  } else {
+    return signInWithPopup(auth, provider)
+  }
 }
 
 const signOut = () => {

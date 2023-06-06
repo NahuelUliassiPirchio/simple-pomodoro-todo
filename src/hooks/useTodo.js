@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { deleteData, updateData } from '@/services/dbService'
+import { useAuthContext } from '@/contexts/authContext'
 
 export default function useTodo (initialTodo) {
   const [todo, setTodo] = useState(initialTodo)
   const [error, setError] = useState(null)
   const [showEdit, setShowEdit] = useState(false)
+  const { user } = useAuthContext()
   const mounted = useRef(false)
 
   const handleDelete = async () => {
     try {
-      await deleteData('todos', todo.id)
+      await deleteData(`users/${user.uid}/todos`, todo.id)
       setTodo(null)
     } catch (error) {
       setError(error)
@@ -44,7 +46,7 @@ export default function useTodo (initialTodo) {
     }
     const updateTodo = async () => {
       try {
-        await updateData('todos', todo.id, {
+        await updateData(`users/${user.uid}/todos`, todo.id, {
           text: todo.text,
           completed: todo.completed
         })
@@ -53,7 +55,7 @@ export default function useTodo (initialTodo) {
       }
     }
     updateTodo()
-  }, [todo])
+  }, [todo, user])
 
   return [todo, error, showEdit, handleEdit, handleDelete, handleSave, handleCheck]
 }

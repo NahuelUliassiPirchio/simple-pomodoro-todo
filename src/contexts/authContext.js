@@ -15,12 +15,16 @@ export function AuthProvider ({ children }) {
 
   React.useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
-      setUser({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      })
+      setUser(
+        user
+          ? {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL
+            }
+          : null
+      )
       setLoading(false)
     })
 

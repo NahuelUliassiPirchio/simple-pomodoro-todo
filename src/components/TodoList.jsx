@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Alert } from 'react-bootstrap'
+import Alert from 'react-bootstrap/Alert'
 import { getData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
 import { useAuthContext } from '@/contexts/authContext'
@@ -9,6 +9,7 @@ import { useDataContext } from '@/contexts/dataContext'
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
+  const [error, setError] = useState(null)
   const { user, loading } = useAuthContext()
   const { data } = useDataContext()
 
@@ -17,10 +18,14 @@ export default function TodoList () {
     if (!user || loading) {
       return
     }
-    const response = getData('todos', user.uid)
-    response.then(data => {
-      setTodos(data)
-    })
+
+    getData(`users/${user.uid}/todos`, user.uid)
+      .then(data => {
+        setTodos(data)
+      })
+      .catch(error => {
+        setError(error)
+      })
   }, [loading, user])
 
   useEffect(() => {
@@ -42,12 +47,23 @@ export default function TodoList () {
     )
   }
 
+  if (error) {
+    return (
+      <Alert variant='danger'>
+        {error.message}
+      </Alert>
+    )
+  }
+
   return (
-    <ul className='list-group'>
-      {
+    (todos.length === 0 && !loading)
+      ? <Alert variant='info'>You have no todos</Alert>
+      : (
+        <ul className='list-group'>
+          {
         todos &&
         todos.map(todo => <TodoListItem key={todo.id} initialTodo={todo} />)
       }
-    </ul>
+        </ul>)
   )
 }

@@ -1,11 +1,11 @@
 import Image from 'next/image'
-import { Button } from 'react-bootstrap'
+import Button from 'react-bootstrap/Button'
 
 export default function UserAccount ({ user, handleLogOut }) {
   return (
     <nav className='d-flex justify-content-between align-items-center'>
       <div className='d-flex align-items-center'>
-        <Image src={user.photoURL} alt='user' width={50} height={50} className='rounded-circle' />
+        <Image src={user.photoURL} alt='user' width={40} height={40} className='rounded-circle' />
         <div className='ms-3 pe-3'>
           <h6 className='mb-0 text-light'>{user.displayName}</h6>
           <p className='mb-0 text-muted'>{user.email}</p>

@@ -22,11 +22,10 @@ export default function NewTodo () {
     try {
       const newNote = {
         text: noteRef.current.value,
-        completed: false,
-        owner: user.uid
+        completed: false
       }
 
-      const newNoteDocument = await addData('todos', newNote)
+      const newNoteDocument = await addData(`users/${user.uid}/todos`, newNote)
       newNote.id = newNoteDocument.id
       updateData(newNote)
 
