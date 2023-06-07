@@ -7,7 +7,7 @@ import { useAuthContext } from '@/contexts/authContext'
 import { useDataContext } from '@/contexts/dataContext'
 
 export default function NewTodo () {
-  const noteRef = useRef()
+  const todoRef = useRef()
 
   const { user } = useAuthContext()
   const { updateData } = useDataContext()
@@ -20,16 +20,17 @@ export default function NewTodo () {
     }
 
     try {
-      const newNote = {
-        text: noteRef.current.value,
-        completed: false
+      const newTtodo = {
+        text: todoRef.current.value,
+        completed: false,
+        crucial: false
       }
 
-      const newNoteDocument = await addData(`users/${user.uid}/todos`, newNote)
-      newNote.id = newNoteDocument.id
-      updateData(newNote)
+      const newTtodoDocument = await addData(`users/${user.uid}/todos`, newTtodo)
+      newTtodo.id = newTtodoDocument.id
+      updateData(newTtodo)
 
-      noteRef.current.value = ''
+      todoRef.current.value = ''
     } catch (error) {
       console.log(error)
     }
@@ -38,7 +39,7 @@ export default function NewTodo () {
   return (
     <Form className='container mt-3 mb-3'>
       <Row>
-        <Form.Control type='text' autoCapitalize='on' className='form-control me-3 col col-lg-11"' placeholder='Todo' ref={noteRef} />
+        <Form.Control type='text' autoCapitalize='on' className='form-control me-3 col col-lg-11"' placeholder='Todo' ref={todoRef} />
         <Button variant='primary' className='col col-lg-1' type='submit' onClick={handleSubmit}>
           Submit
         </Button>

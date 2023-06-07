@@ -14,13 +14,25 @@ export default function TodoList () {
   const { data } = useDataContext()
 
   useEffect(() => {
-    console.log(user)
     if (!user || loading) {
       return
     }
 
     getData(`users/${user.uid}/todos`, user.uid)
       .then(data => {
+        // order by createDate
+        // data.sort((a, b) => a.createDate - b.createDate)
+
+        // order by completed
+        // data.sort((a, b) => {
+        //   if (a.completed && !b.completed) {
+        //     return 1
+        //   }
+        //   if (!a.completed && b.completed) {
+        //     return -1
+        //   }
+        //   return 0
+        // })
         setTodos(data)
       })
       .catch(error => {

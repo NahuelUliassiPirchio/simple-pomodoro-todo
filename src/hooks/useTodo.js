@@ -18,11 +18,10 @@ export default function useTodo (initialTodo) {
     }
   }
 
-  const handleSave = async (e) => {
-    if (e.key !== 'Enter') return
+  const handleSave = async (todoChanges) => {
     setTodo({
       ...todo,
-      text: e.target.value
+      ...todoChanges
     })
 
     setShowEdit(false)
@@ -30,13 +29,6 @@ export default function useTodo (initialTodo) {
 
   const handleEdit = () => {
     setShowEdit(true)
-  }
-
-  const handleCheck = () => {
-    setTodo({
-      ...todo,
-      completed: !todo.completed
-    })
   }
 
   useEffect(() => {
@@ -48,7 +40,8 @@ export default function useTodo (initialTodo) {
       try {
         await updateData(`users/${user.uid}/todos`, todo.id, {
           text: todo.text,
-          completed: todo.completed
+          completed: todo.completed,
+          crucial: todo.crucial
         })
       } catch (error) {
         setError(error)
@@ -57,5 +50,5 @@ export default function useTodo (initialTodo) {
     updateTodo()
   }, [todo, user])
 
-  return [todo, error, showEdit, handleEdit, handleDelete, handleSave, handleCheck]
+  return [todo, error, showEdit, handleEdit, handleDelete, handleSave]
 }

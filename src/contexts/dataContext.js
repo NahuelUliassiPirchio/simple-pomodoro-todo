@@ -1,15 +1,15 @@
 'use client'
 
-import React from 'react'
+import { createContext, useContext, useState } from 'react'
 
-const DataContext = React.createContext()
+const DataContext = createContext()
 
 export function useDataContext () {
-  return React.useContext(DataContext)
+  return useContext(DataContext)
 }
 
 export function DataProvider ({ children }) {
-  const [data, setData] = React.useState(null)
+  const [data, setData] = useState(null)
 
   const updateData = (data) => {
     setData(data)

@@ -1,8 +1,9 @@
+import { AuthProvider } from '@/contexts/authContext'
+import { DataProvider } from '@/contexts/dataContext'
+
 import NavBar from '@/components/NavBar'
 import TodoList from '@/components/TodoList'
-import { AuthProvider } from '@/contexts/authContext'
 import NewTodo from '@/components/NewTodo'
-import { DataProvider } from '@/contexts/dataContext'
 
 export default function Home () {
   return (
