@@ -39,7 +39,7 @@ export default function NewTodo () {
   return (
     <Form className='container mt-3 mb-3'>
       <Row>
-        <Form.Control type='text' autoCapitalize='on' className='form-control me-3 col col-lg-11"' placeholder='Todo' ref={todoRef} />
+        <Form.Control type='text' className='form-control me-3 col col-lg-11"' placeholder='Todo' ref={todoRef} />
         <Button variant='primary' className='col col-lg-1' type='submit' onClick={handleSubmit}>
           Submit
         </Button>

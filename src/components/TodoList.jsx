@@ -2,43 +2,37 @@
 
 import { useEffect, useState } from 'react'
 import Alert from 'react-bootstrap/Alert'
+
 import { getData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
 import { useAuthContext } from '@/contexts/authContext'
 import { useDataContext } from '@/contexts/dataContext'
+import { useFilterContext } from '@/contexts/filtersContext'
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
   const [error, setError] = useState(null)
+
   const { user, loading } = useAuthContext()
   const { data } = useDataContext()
+  const { activeFilter } = useFilterContext()
 
   useEffect(() => {
     if (!user || loading) {
       return
     }
 
-    getData(`users/${user.uid}/todos`, user.uid)
-      .then(data => {
-        // order by createDate
-        // data.sort((a, b) => a.createDate - b.createDate)
-
-        // order by completed
-        // data.sort((a, b) => {
-        //   if (a.completed && !b.completed) {
-        //     return 1
-        //   }
-        //   if (!a.completed && b.completed) {
-        //     return -1
-        //   }
-        //   return 0
-        // })
-        setTodos(data)
-      })
-      .catch(error => {
+    const getTodos = async () => {
+      try {
+        const todos = await getData(`users/${user.uid}/todos`, activeFilter)
+        setTodos(todos)
+      } catch (error) {
         setError(error)
-      })
-  }, [loading, user])
+      }
+    }
+
+    getTodos()
+  }, [loading, user, activeFilter])
 
   useEffect(() => {
     if (!data) {

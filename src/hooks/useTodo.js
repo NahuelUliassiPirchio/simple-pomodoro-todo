@@ -28,7 +28,7 @@ export default function useTodo (initialTodo) {
   }
 
   const handleEdit = () => {
-    setShowEdit(true)
+    setShowEdit(!showEdit)
   }
 
   useEffect(() => {
@@ -36,6 +36,7 @@ export default function useTodo (initialTodo) {
       mounted.current = true
       return
     }
+
     const updateTodo = async () => {
       try {
         await updateData(`users/${user.uid}/todos`, todo.id, {

@@ -1,5 +1,6 @@
-import { addDoc, collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore/lite'
+import { addDoc, collection, getDocs, updateDoc, deleteDoc, doc, query } from 'firebase/firestore/lite'
 import { db } from '@/firebase/firebaseInit'
+import { filters } from '@/utils/filters'
 
 export const addData = (path, data) => {
   return addDoc(collection(db, path), {
@@ -7,8 +8,8 @@ export const addData = (path, data) => {
   })
 }
 
-export const getData = async (path) => {
-  const querySnapshot = query(collection(db, path), orderBy('completed', 'asc'))
+export const getData = async (path, activeFilter) => {
+  const querySnapshot = query(collection(db, path), filters[activeFilter])
   const response = await getDocs(querySnapshot)
   return response.docs.map(doc => {
     const documentTimestamp = doc._document.createTime
