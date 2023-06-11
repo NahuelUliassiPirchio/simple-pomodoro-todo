@@ -9,16 +9,15 @@ export default function Filters () {
   const filterKeys = Object.keys(filters)
 
   return (
-    <section className='mb-2'>
-      <Dropdown>
-        <Dropdown.Toggle id='dropdown-button-dark-example1' variant='secondary'>
-          {
+    <Dropdown as='section' className='mb-2 d-inline-block'>
+      <Dropdown.Toggle id='dropdown-button-dark-example1' variant='secondary'>
+        {
             activeFilter === filterKeys[0] ? 'Filter' : getFormattedName(activeFilter)
           }
-        </Dropdown.Toggle>
+      </Dropdown.Toggle>
 
-        <Dropdown.Menu variant='dark'>
-          {
+      <Dropdown.Menu variant='dark'>
+        {
             filterKeys.map((filter) => {
               return (
                 <Dropdown.Item
@@ -34,8 +33,7 @@ export default function Filters () {
             }
             )
           }
-        </Dropdown.Menu>
-      </Dropdown>
-    </section>
+      </Dropdown.Menu>
+    </Dropdown>
   )
 }

@@ -6,6 +6,7 @@ import TodoList from '@/components/TodoList'
 import NewTodo from '@/components/NewTodo'
 import Filters from '@/components/Filters'
 import { FiltersProvider } from '@/contexts/filtersContext'
+import PomodoroTimer from '@/components/PomodoroTimer'
 
 export default function Home () {
   return (
@@ -17,6 +18,7 @@ export default function Home () {
             <NewTodo />
             <FiltersProvider>
               <Filters />
+              <PomodoroTimer />
               <TodoList />
             </FiltersProvider>
           </main>
