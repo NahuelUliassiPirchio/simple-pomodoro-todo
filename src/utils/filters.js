@@ -9,7 +9,7 @@ export const filters = {
   alphabeticalDescendant: orderBy('text', 'desc')
 }
 
-export function getFormattedName (filter) {
+export function formatFilterName (filter) {
   filter = filter.replace(/([A-Z])/g, ' $1')
   return filter.charAt(0).toUpperCase() + filter.slice(1)
 }

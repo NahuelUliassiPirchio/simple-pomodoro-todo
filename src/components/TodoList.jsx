@@ -6,16 +6,15 @@ import Alert from 'react-bootstrap/Alert'
 import { getData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
 import { useAuthContext } from '@/contexts/authContext'
-import { useDataContext } from '@/contexts/dataContext'
-import { useFilterContext } from '@/contexts/filtersContext'
+import { useFiltersStore, useGlobalStore } from '@/stores/globalStore'
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
   const [error, setError] = useState(null)
 
   const { user, loading } = useAuthContext()
-  const { data } = useDataContext()
-  const { activeFilter } = useFilterContext()
+  const newTodo = useGlobalStore(state => state.newTodo)
+  const filter = useFiltersStore(state => state.filter)
 
   useEffect(() => {
     if (!user || loading) {
@@ -24,7 +23,7 @@ export default function TodoList () {
 
     const getTodos = async () => {
       try {
-        const todos = await getData(`users/${user.uid}/todos`, activeFilter)
+        const todos = await getData(`users/${user.uid}/todos`, filter)
         setTodos(todos)
       } catch (error) {
         setError(error)
@@ -32,18 +31,18 @@ export default function TodoList () {
     }
 
     getTodos()
-  }, [loading, user, activeFilter])
+  }, [loading, user, filter])
 
   useEffect(() => {
-    if (!data) {
+    if (!newTodo) {
       return
     }
     setTodos(prevTodos => {
-      const newTodos = new Set([...prevTodos, data])
+      const newTodos = new Set([...prevTodos, newTodo])
       return [...newTodos]
     }
     )
-  }, [data])
+  }, [newTodo])
 
   if (!user && !loading) {
     return (

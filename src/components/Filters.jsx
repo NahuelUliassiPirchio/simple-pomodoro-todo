@@ -1,18 +1,26 @@
 'use client'
 
-import { useFilterContext } from '@/contexts/filtersContext'
-import { filters, getFormattedName } from '@/utils/filters'
+import { useFiltersStore } from '@/stores/globalStore'
+import { filters, formatFilterName } from '@/utils/filters'
+import { useEffect, useState } from 'react'
 import Dropdown from 'react-bootstrap/Dropdown'
 
 export default function Filters () {
-  const { activeFilter, updateFilter } = useFilterContext()
+  const [filterLabel, setFilterLabel] = useState('Filter')
+  const activeFilter = useFiltersStore(state => state.filter)
+  const updateFilter = useFiltersStore(state => state.updateFilter)
   const filterKeys = Object.keys(filters)
+
+  useEffect(() => {
+    setFilterLabel(activeFilter === filterKeys[0] ? 'Filter' : formatFilterName(activeFilter))
+  }
+  , [activeFilter, filterKeys])
 
   return (
     <Dropdown as='section' className='mb-2 d-inline-block'>
-      <Dropdown.Toggle id='dropdown-button-dark-example1' variant='secondary'>
+      <Dropdown.Toggle id='filter-dropdown-button' variant='secondary'>
         {
-            activeFilter === filterKeys[0] ? 'Filter' : getFormattedName(activeFilter)
+            filterLabel
           }
       </Dropdown.Toggle>
 
@@ -26,7 +34,7 @@ export default function Filters () {
                   onClick={() => updateFilter(filter)}
                 >
                   {
-                    getFormattedName(filter)
+                    formatFilterName(filter)
                   }
                 </Dropdown.Item>
               )

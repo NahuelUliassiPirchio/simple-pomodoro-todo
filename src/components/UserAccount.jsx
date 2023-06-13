@@ -8,7 +8,7 @@ export default function UserAccount ({ user, handleLogOut }) {
         <Image src={user.photoURL} alt='user' width={40} height={40} className='rounded-circle' />
         <div className='ms-3 pe-3'>
           <h6 className='mb-0 text-light'>{user.displayName}</h6>
-          <p className='mb-0 text-muted'>{user.email}</p>
+          <p className='mb-0 text-white-50'>{user.email}</p>
         </div>
       </div>
       <Button variant='outline-light' className='ms-auto' size='sm' onClick={handleLogOut}>Log Out</Button>

@@ -4,13 +4,13 @@ import { useRef } from 'react'
 import { Button, Form, Row } from 'react-bootstrap'
 import { addData } from '@/services/dbService'
 import { useAuthContext } from '@/contexts/authContext'
-import { useDataContext } from '@/contexts/dataContext'
+import { useGlobalStore } from '@/stores/globalStore'
 
 export default function NewTodo () {
   const todoRef = useRef()
 
   const { user } = useAuthContext()
-  const { updateData } = useDataContext()
+  const { setNewTodo } = useGlobalStore()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -20,15 +20,15 @@ export default function NewTodo () {
     }
 
     try {
-      const newTtodo = {
+      const newTodo = {
         text: todoRef.current.value,
         completed: false,
         crucial: false
       }
 
-      const newTtodoDocument = await addData(`users/${user.uid}/todos`, newTtodo)
-      newTtodo.id = newTtodoDocument.id
-      updateData(newTtodo)
+      const newTtodoDocuent = await addData(`users/${user.uid}/todos`, newTodo)
+      newTodo.id = newTtodoDocuent.id
+      setNewTodo(newTodo)
 
       todoRef.current.value = ''
     } catch (error) {
