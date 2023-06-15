@@ -17,3 +17,10 @@ export const useFiltersStore = create(
     }
   )
 )
+
+export const useTimerStore = create(
+  (set) => ({
+    isRunning: false,
+    updateIsRunning: (isRunning) => set({ isRunning })
+  })
+)

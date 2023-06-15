@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
+import { Button, Container, Navbar, Offcanvas } from 'react-bootstrap'
 
 import { useAuthContext } from '@/contexts/authContext'
 import { signIn, signOut } from '@/services/authService'
@@ -37,12 +37,12 @@ export default function NavBar () {
               Offcanvas
             </Offcanvas.Title>
           </Offcanvas.Header>
-          <Offcanvas.Body>
+          {/* <Offcanvas.Body>
             <Nav className='justify-content-center flex-grow-1 pe-3'>
               <Nav.Link href='#action1'>Home</Nav.Link>
               <Nav.Link href='#action2'>Link</Nav.Link>
             </Nav>
-          </Offcanvas.Body>
+          </Offcanvas.Body> */}
         </Navbar.Offcanvas>
         {
           loading

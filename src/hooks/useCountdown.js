@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
+import { useTimerStore } from '@/stores/globalStore'
+import { calculateMinutes, calculateResidualSeconds } from '@/utils/counterFormatter'
 
 export default function useCountdown (initialTimeS = 0, onTimeUp = () => {}) {
-  const [minutes, setMinutes] = useState(Math.floor(initialTimeS / 60))
-  const [seconds, setSeconds] = useState(Math.floor((initialTimeS % 60)))
-  const [isRunning, setIsRunning] = useState(false)
+  const [minutes, setMinutes] = useState(calculateMinutes(initialTimeS))
+  const [seconds, setSeconds] = useState(calculateResidualSeconds(initialTimeS))
+  const isRunning = useTimerStore(state => state.isRunning)
+  const updateIsRunning = useTimerStore(state => state.updateIsRunning)
 
   useEffect(() => {
     if (!isRunning) {
@@ -15,8 +18,8 @@ export default function useCountdown (initialTimeS = 0, onTimeUp = () => {}) {
       }
       if (seconds === 0) {
         if (minutes === 0) {
-          onTimeUp()
           clearInterval(interval)
+          onTimeUp()
         } else {
           setMinutes(minutes - 1)
           setSeconds(59)
@@ -26,17 +29,21 @@ export default function useCountdown (initialTimeS = 0, onTimeUp = () => {}) {
     return () => clearInterval(interval)
   }, [seconds, minutes, isRunning, onTimeUp])
 
+  useEffect(() => {
+    resetTimer(initialTimeS)
+  }, [initialTimeS])
+
   const pauseTimer = () => {
-    setIsRunning(false)
+    updateIsRunning(false)
   }
 
-  const resetTimer = () => {
-    setMinutes(Math.floor(initialTimeS / 60))
-    setSeconds(Math.floor(initialTimeS % 60))
+  const resetTimer = (time) => {
+    setMinutes(calculateMinutes(time))
+    setSeconds(calculateResidualSeconds(time))
   }
 
   const startTimer = () => {
-    setIsRunning(true)
+    updateIsRunning(true)
   }
 
   return {
