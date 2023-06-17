@@ -6,7 +6,7 @@ import Alert from 'react-bootstrap/Alert'
 import { getData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
 import { useAuthContext } from '@/contexts/authContext'
-import { useFiltersStore, useGlobalStore } from '@/stores/globalStore'
+import { useActivePomodoroTodoStore, useFiltersStore, useGlobalStore } from '@/stores/globalStore'
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
@@ -16,6 +16,8 @@ export default function TodoList () {
   const newTodo = useGlobalStore(state => state.newTodo)
   const filter = useFiltersStore(state => state.filter)
 
+  const setActivePomodoro = useActivePomodoroTodoStore(state => state.updateActivePomodoroTodo)
+
   useEffect(() => {
     if (!user || loading) {
       return
@@ -24,6 +26,16 @@ export default function TodoList () {
     const getTodos = async () => {
       try {
         const todos = await getData(`users/${user.uid}/todos`, filter)
+        console.log('todos', todos)
+
+        const activePomodoroIndexIndex = todos.findIndex(todo => todo.id === 'activePomodoro')
+        if (activePomodoroIndexIndex !== -1) {
+          const activePomodoroId = todos.splice(activePomodoroIndexIndex, 1)[0].text
+          const activePomodoroIndex = todos.findIndex(todo => todo.id === activePomodoroId)
+          const activePomodoro = activePomodoroIndex !== -1 && todos.splice(activePomodoroIndex, 1)[0]
+          setActivePomodoro(activePomodoro)
+        }
+
         setTodos(todos)
       } catch (error) {
         setError(error)

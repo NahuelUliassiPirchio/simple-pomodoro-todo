@@ -18,6 +18,12 @@ export const useFiltersStore = create(
   )
 )
 
+export const useActivePomodoroTodoStore = create((set) => ({
+  activePomodoroTodo: null,
+  updateActivePomodoroTodo: (pomodoro) => set({ activePomodoroTodo: pomodoro })
+})
+)
+
 export const useTimerStore = create(
   (set) => ({
     isRunning: false,
