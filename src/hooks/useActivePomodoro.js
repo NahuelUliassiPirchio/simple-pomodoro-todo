@@ -5,7 +5,7 @@ import { useActivePomodoroTodoStore } from '@/stores/globalStore'
 
 export default function useActivePomodoro () {
   const activePomodoroGlobal = useActivePomodoroTodoStore(state => state.activePomodoroTodo)
-  const setActivePomodoro = useActivePomodoroTodoStore(state => state.updateActivePomodoro)
+  const setActivePomodoro = useActivePomodoroTodoStore(state => state.updateActivePomodoroTodo)
 
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(null)
@@ -15,27 +15,30 @@ export default function useActivePomodoro () {
   const updateActivePomodoro = async (activePomodoro, updateFunction) => {
     setLoading(true)
     try {
-      const response = await updateFunction()
+      await updateFunction()
       setActivePomodoro(activePomodoro)
-      console.log(response)
     } catch (error) {
       setError(error)
     }
     setLoading(false)
   }
 
-  const removeActivePomodoro = () => updateActivePomodoro(null, setData(`/users/${user.uid}/todos`, 'activePomodoro', null))
+  const removeActivePomodoro = () => updateActivePomodoro(null, () => setData(`/users/${user.uid}/todos`, 'activePomodoro', null))
 
   const createActivePomodoro = (todo) => {
-    const initialData = { // TODO: refactor this dirty code
+    const initialData = {
       text: todo.id,
       completed: false,
       crucial: false
     }
-    return updateActivePomodoro(todo, setData(`/users/${user.uid}/todos`, 'activePomodoro', initialData))
+    return updateActivePomodoro(todo, async () => {
+      await setData(`/users/${user.uid}/todos`, 'activePomodoro', initialData)
+    })
   }
 
-  const editActivePomodoro = (todo) => updateActivePomodoro(todo, updateData(`/users/${user.uid}/todos`, todo.id, todo))
+  const editActivePomodoro = (todo) => updateActivePomodoro(todo, async () => {
+    await updateData(`/users/${user.uid}/todos`, todo.id, todo)
+  })
 
   return {
     activePomodoro: activePomodoroGlobal,

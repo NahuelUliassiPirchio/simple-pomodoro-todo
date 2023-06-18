@@ -26,7 +26,6 @@ export default function TodoList () {
     const getTodos = async () => {
       try {
         const todos = await getData(`users/${user.uid}/todos`, filter)
-        console.log('todos', todos)
 
         const activePomodoroIndexIndex = todos.findIndex(todo => todo.id === 'activePomodoro')
         if (activePomodoroIndexIndex !== -1) {
@@ -45,7 +44,7 @@ export default function TodoList () {
     getTodos()
   }, [loading, user, filter])
 
-  useEffect(() => {
+  useEffect(() => { // TODO: ADDING AND REMOVING ACTIVE POMODORO BROKES THIS, I THINK IS BECAUSE DOUBLE KEYS
     if (!newTodo) {
       return
     }

@@ -1,23 +1,24 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { Alert, Button, CloseButton, Form, ListGroupItem, Modal } from 'react-bootstrap'
+import { Alert, Badge, Button, CloseButton, Form, ListGroupItem, Modal } from 'react-bootstrap'
 import useTodo from '@/hooks/useTodo'
 
 import crucialIcon from '../../public/icons/crucial.svg'
 import crucialActiveIcon from '../../public/icons/crucial-active.svg'
 import IconButton from './IconButton'
-import { useActivePomodoroTodoStore } from '@/stores/globalStore'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
+import { useGlobalStore } from '@/stores/globalStore'
 
 export default function TodoListItem ({ initialTodo, pomodoro = false }) {
-  const [todo, error, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo)
+  const [todo, error, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
 
   const { createActivePomodoro, removeActivePomodoro } = useActivePomodoro()
+  const { setNewTodo } = useGlobalStore()
 
   const checkboxId = useId()
-  const setActivePomodoro = useActivePomodoroTodoStore(state => state.updateActivePomodoroTodo)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isActivePomodo, setIsActivePomodoro] = useState(false)
 
   const handleCloseModal = () => {
     setShowDeleteModal(false)
@@ -31,14 +32,17 @@ export default function TodoListItem ({ initialTodo, pomodoro = false }) {
   const handlePomodoro = async () => {
     if (todo.completed) return
     await createActivePomodoro(todo)
+
+    setIsActivePomodoro(true)
   }
 
   const handleClosePomodoro = async () => {
     await removeActivePomodoro()
     setShowDeleteModal(false)
+    setNewTodo(todo)
   }
 
-  if (!todo) return null
+  if (!todo || isActivePomodo) return null
 
   return (
     <ListGroupItem as='li' onDoubleClick={handleDoubleClick}>
@@ -47,10 +51,10 @@ export default function TodoListItem ({ initialTodo, pomodoro = false }) {
           type='checkbox' className='cursor-pointer'
           isValid
           checked={todo.completed}
-          onChange={() => {
+          onChange={async () => {
             handleSave({ completed: !todo.completed })
             if (pomodoro) {
-              setActivePomodoro(null)
+              handleClosePomodoro()
             }
           }}
         />
@@ -76,6 +80,13 @@ export default function TodoListItem ({ initialTodo, pomodoro = false }) {
       </Form.Check>
 
       <div className='d-flex float-end gap-2 mt-1'>
+        {
+            todo.pomodoros && (
+              <span>
+                <Badge bg='success'>{`${todo.pomodoros} Pomodoro${todo.pomodoros > 1 && 's'} completed`}</Badge>
+              </span>
+            )
+          }
         {
           !pomodoro
             ? (

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { deleteData, updateData } from '@/services/dbService'
 import { useAuthContext } from '@/contexts/authContext'
 
-export default function useTodo (initialTodo) {
+export default function useTodo (initialTodo, pomodoro) {
   const [todo, setTodo] = useState(initialTodo)
   const [error, setError] = useState(null)
   const [showEdit, setShowEdit] = useState(false)
@@ -32,6 +32,15 @@ export default function useTodo (initialTodo) {
   }
 
   useEffect(() => {
+    if (!mounted.current && pomodoro) {
+      mounted.current = true
+      return
+    }
+
+    setTodo(initialTodo)
+  }, [initialTodo, pomodoro])
+
+  useEffect(() => {
     if (!mounted.current) {
       mounted.current = true
       return
@@ -49,7 +58,7 @@ export default function useTodo (initialTodo) {
       }
     }
     updateTodo()
-  }, [todo, user])
+  }, [todo, user, initialTodo])
 
   return [todo, error, showEdit, handleEdit, handleDelete, handleSave]
 }

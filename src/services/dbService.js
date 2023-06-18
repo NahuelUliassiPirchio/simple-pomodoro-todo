@@ -11,7 +11,7 @@ export const addData = (path, data) => {
 export const getData = async (path, activeFilter) => {
   const querySnapshot = query(collection(db, path), activeFilter && filters[activeFilter])
   const response = await getDocs(querySnapshot)
-  console.log(response.docs)
+
   return response.docs.map(doc => {
     const documentTimestamp = doc._document.createTime
     const documentDate = documentTimestamp.toTimestamp().toDate()

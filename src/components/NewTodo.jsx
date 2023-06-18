@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { Button, Form, Row } from 'react-bootstrap'
+import { Button, Form, Row, Spinner } from 'react-bootstrap'
 import { addData } from '@/services/dbService'
 import { useAuthContext } from '@/contexts/authContext'
 import { useGlobalStore } from '@/stores/globalStore'
@@ -9,15 +9,13 @@ import { useGlobalStore } from '@/stores/globalStore'
 export default function NewTodo () {
   const todoRef = useRef()
 
-  const { user } = useAuthContext()
+  const { user, loading } = useAuthContext()
   const { setNewTodo } = useGlobalStore()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!user) {
-      return
-    }
+    if (!user) return // TODO: handle no user logged in
 
     try {
       const newTodo = {
@@ -41,7 +39,21 @@ export default function NewTodo () {
       <Row>
         <Form.Control type='text' className='form-control me-3 col col-lg-11"' placeholder='Todo' ref={todoRef} />
         <Button variant='primary' className='col col-lg-1' type='submit' onClick={handleSubmit}>
-          Submit
+          {
+            loading
+              ? (
+                <Spinner
+                  as='span'
+                  animation='border'
+                  size='sm'
+                  role='status'
+                  aria-hidden='true'
+                />
+                )
+              : (
+                  'Add to-do'
+                )
+          }
         </Button>
       </Row>
     </Form>

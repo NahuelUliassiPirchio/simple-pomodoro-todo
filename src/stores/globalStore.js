@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+// TODO: improve this
 export const useGlobalStore = create((set) => ({
   newTodo: null,
   setNewTodo: (todo) => set({ newTodo: todo })
