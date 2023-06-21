@@ -16,7 +16,7 @@ export default function TodoList () {
   const newTodo = useGlobalStore(state => state.newTodo)
   const filter = useFiltersStore(state => state.filter)
 
-  const setActivePomodoro = useActivePomodoroTodoStore(state => state.updateActivePomodoroTodo)
+  const updateActivePomodoro = useActivePomodoroTodoStore(state => state.updateActivePomodoroTodo)
 
   useEffect(() => {
     if (!user || loading) {
@@ -32,7 +32,7 @@ export default function TodoList () {
           const activePomodoroId = todos.splice(activePomodoroIndexIndex, 1)[0].text
           const activePomodoroIndex = todos.findIndex(todo => todo.id === activePomodoroId)
           const activePomodoro = activePomodoroIndex !== -1 && todos.splice(activePomodoroIndex, 1)[0]
-          setActivePomodoro(activePomodoro)
+          updateActivePomodoro(activePomodoro)
         }
 
         setTodos(todos)
@@ -44,15 +44,13 @@ export default function TodoList () {
     getTodos()
   }, [loading, user, filter])
 
-  useEffect(() => { // TODO: ADDING AND REMOVING ACTIVE POMODORO BROKES THIS, I THINK IS BECAUSE DOUBLE KEYS
+  useEffect(() => {
     if (!newTodo) {
       return
     }
     setTodos(prevTodos => {
-      const newTodos = new Set([...prevTodos, newTodo])
-      return [...newTodos]
-    }
-    )
+      return [...prevTodos, newTodo]
+    })
   }, [newTodo])
 
   if (!user && !loading) {
