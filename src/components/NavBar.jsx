@@ -5,6 +5,7 @@ import { Button, Container, Navbar, Offcanvas } from 'react-bootstrap'
 import { useAuthContext } from '@/contexts/authContext'
 import { signIn, signOut } from '@/services/authService'
 import UserAccount from './UserAccount'
+import DailyPomodoros from './DailyPomodoros'
 
 export default function NavBar () {
   const expand = 'sm'
@@ -43,6 +44,7 @@ export default function NavBar () {
               <Nav.Link href='#action2'>Link</Nav.Link>
             </Nav>
           </Offcanvas.Body> */}
+          <DailyPomodoros user={user} />
         </Navbar.Offcanvas>
         {
           loading

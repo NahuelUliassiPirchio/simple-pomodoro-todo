@@ -5,6 +5,7 @@ import { Container } from 'react-bootstrap'
 import Timer from './Timer'
 import TodoListItem from './TodoListItem'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
+import { useWorkedPomsStore } from '@/stores/globalStore'
 
 const intialTimePeriods = {
   work: 5,
@@ -15,18 +16,23 @@ export default function PomodoroTimer () {
   const [isResting, setIsResting] = useState(false)
   const [startRunningAt, setStartRunningAt] = useState(null)
 
-  const { activePomodoro, editActivePomodoro } = useActivePomodoro()
+  const { activePomodoro, editActivePomodoro, increaseDailyPomodoro } = useActivePomodoro()
+  const { increaseWorkedPoms } = useWorkedPomsStore()
 
-  const handleTimeUp = () => {
+  const handleTimeUp = async () => {
     setRemainingTime(!isResting ? intialTimePeriods.rest : intialTimePeriods.work)
 
     setIsResting(!isResting)
 
     if (activePomodoro && !isResting) {
-      editActivePomodoro({
-        ...activePomodoro,
-        pomodoros: !isNaN(activePomodoro.pomodoros) ? activePomodoro.pomodoros + 1 : 1
-      })
+      await Promise.all([
+        editActivePomodoro({
+          ...activePomodoro,
+          pomodoros: !isNaN(activePomodoro.pomodoros) ? activePomodoro.pomodoros + 1 : 1
+        }),
+        increaseDailyPomodoro()
+      ])
+      increaseWorkedPoms()
     }
 
     const doneAudio = new Audio('/audio/done_audio.mp3')

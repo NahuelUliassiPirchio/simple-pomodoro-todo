@@ -7,6 +7,12 @@ export const useGlobalStore = create((set) => ({
   setNewTodo: (todo) => set({ newTodo: todo })
 }))
 
+export const useWorkedPomsStore = create((set) => ({
+  workedPoms: 0,
+  setWorkedPoms: (amount) => set({ workedPoms: amount }),
+  increaseWorkedPoms: () => set(state => ({ workedPoms: state.workedPoms + 1 }))
+}))
+
 export const useFiltersStore = create(
   persist(
     (set) => ({

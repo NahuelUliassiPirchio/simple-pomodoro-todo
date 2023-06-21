@@ -2,6 +2,7 @@ import React from 'react'
 import { useAuthContext } from '@/contexts/authContext'
 import { setData, updateData } from '@/services/dbService'
 import { useActivePomodoroTodoStore } from '@/stores/globalStore'
+import { increment } from 'firebase/firestore/lite'
 
 export default function useActivePomodoro () {
   const activePomodoroGlobal = useActivePomodoroTodoStore(state => state.activePomodoroTodo)
@@ -32,7 +33,7 @@ export default function useActivePomodoro () {
       crucial: false
     }
     return updateActivePomodoro(todo, async () => {
-      await setData(`/users/${user.uid}/todos`, 'activePomodoro', initialData)
+      await setData(`/users/${user.uid}/todos`, 'activePomodoro', initialData, true)
     })
   }
 
@@ -40,12 +41,25 @@ export default function useActivePomodoro () {
     await updateData(`/users/${user.uid}/todos`, todo.id, todo)
   })
 
+  const increaseDailyPomodoro = async () => { // TODO: this shouldn't be here
+    const todayString = new Date().toDateString()
+
+    try {
+      await setData(`/users/${user.uid}/dailyPomodoros`, todayString,
+        { pomodoros: increment(1) },
+        true)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return {
     activePomodoro: activePomodoroGlobal,
     loading,
     error,
     createActivePomodoro,
     editActivePomodoro,
-    removeActivePomodoro
+    removeActivePomodoro,
+    increaseDailyPomodoro
   }
 }
