@@ -3,23 +3,14 @@
 import { Button, Container, Navbar, Offcanvas } from 'react-bootstrap'
 
 import { useAuthContext } from '@/contexts/authContext'
-import { signIn, signOut } from '@/services/authService'
 import UserAccount from './UserAccount'
 import DailyPomodoros from './DailyPomodoros'
+import SignIn from './SignIn'
 
 export default function NavBar () {
   const expand = 'sm'
 
   const { user, loading } = useAuthContext()
-
-  const handleLogOut = async () => {
-    await signOut()
-  }
-
-  const handleSignIn = async () => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    await signIn(isMobile)
-  }
 
   return (
     <Navbar as='header' bg='dark' variant='dark' expand={expand} className='mb-3'>
@@ -57,10 +48,10 @@ export default function NavBar () {
             : (
                 user
                   ? (
-                    <UserAccount user={user} handleLogOut={handleLogOut} />
+                    <UserAccount user={user} />
                     )
                   : (
-                    <Button variant='light' className='ms-auto' size='sm' onClick={handleSignIn}>Sign In</Button>
+                    <SignIn />
                     )
               )
         }

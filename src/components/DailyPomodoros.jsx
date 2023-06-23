@@ -9,7 +9,11 @@ export default function DailyPomodoros ({ user }) {
     if (!user) return
     const todayString = new Date().toDateString()
     getDataById(`/users/${user.uid}/dailyPomodoros`, todayString)
-      .then(data => setWorkedPoms(data.data().pomodoros))
+      .then(data => {
+        setWorkedPoms(data.data()?.pomodoros || 0)
+      })
+
+    // TODO: handle error and unsuscribe
   }, [user])
 
   return (
