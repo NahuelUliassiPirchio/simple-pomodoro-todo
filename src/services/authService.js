@@ -9,7 +9,7 @@ export const providers = {
 
 export const auth = getAuth(app)
 
-export const signIn = (providerName, isMobile) => {
+export const signIn = (providerName, isMobile = false) => {
   if (providerName === PROVIDER_ANONYMOUS) {
     return signInAnonymously(auth)
   }
@@ -35,7 +35,6 @@ export const mergeAccount = async (providerName) => {
   return signInWithPopup(auth, provider)
     .then((result) => {
       const credential = GoogleAuthProvider.credentialFromResult(result)
-      console.log(auth.currentUser)
 
       return linkWithCredential(auth.currentUser, credential)
     })

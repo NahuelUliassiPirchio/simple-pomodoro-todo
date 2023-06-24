@@ -5,7 +5,7 @@ import Alert from 'react-bootstrap/Alert'
 
 import { getData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
-import { useAuthContext } from '@/contexts/authContext'
+import { useAuthContext } from '@/contexts/AuthContext'
 import { useActivePomodoroTodoStore, useFiltersStore, useGlobalStore } from '@/stores/globalStore'
 
 export default function TodoList () {
@@ -22,6 +22,8 @@ export default function TodoList () {
     if (!user || loading) {
       return
     }
+
+    console.log('llamado')
 
     const getTodos = async () => {
       try {
@@ -42,6 +44,8 @@ export default function TodoList () {
     }
 
     getTodos()
+    // TODO: fix this
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user, filter])
 
   useEffect(() => {
@@ -52,6 +56,8 @@ export default function TodoList () {
       return [...prevTodos, newTodo]
     })
   }, [newTodo])
+
+  if (loading) return <div>Loading...</div>
 
   if (!user && !loading) {
     return (

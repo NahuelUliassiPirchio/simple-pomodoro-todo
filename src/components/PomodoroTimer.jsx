@@ -8,15 +8,15 @@ import useActivePomodoro from '@/hooks/useActivePomodoro'
 import { useWorkedPomsStore } from '@/stores/globalStore'
 
 const intialTimePeriods = {
-  work: 5,
-  rest: 3
+  work: 25 * 60,
+  rest: 5 * 60
 }
 export default function PomodoroTimer () {
   const [remainingTime, setRemainingTime] = useState(intialTimePeriods.work)
   const [isResting, setIsResting] = useState(false)
   const [startRunningAt, setStartRunningAt] = useState(null)
 
-  const { activePomodoro, editActivePomodoro, increaseDailyPomodoro } = useActivePomodoro()
+  const { activePomodoro, editActivePomodoro, increaseDailyPomodoro } = useActivePomodoro() // TODO: SHOW ERROR
   const { increaseWorkedPoms } = useWorkedPomsStore()
 
   const handleTimeUp = async () => {
@@ -24,9 +24,9 @@ export default function PomodoroTimer () {
 
     setIsResting(!isResting)
 
-    if (activePomodoro && !isResting) {
+    if (!isResting) {
       await Promise.all([
-        editActivePomodoro({
+        activePomodoro && editActivePomodoro({
           ...activePomodoro,
           pomodoros: !isNaN(activePomodoro.pomodoros) ? activePomodoro.pomodoros + 1 : 1
         }),

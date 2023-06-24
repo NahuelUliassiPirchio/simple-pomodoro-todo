@@ -13,6 +13,11 @@ export const useWorkedPomsStore = create((set) => ({
   increaseWorkedPoms: () => set(state => ({ workedPoms: state.workedPoms + 1 }))
 }))
 
+export const useSignInStore = create((set) => ({
+  showSignInModal: false,
+  setShowSignInModal: (value) => set({ showSignInModal: value })
+}))
+
 export const useFiltersStore = create(
   persist(
     (set) => ({

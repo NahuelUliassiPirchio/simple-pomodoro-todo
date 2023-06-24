@@ -13,6 +13,7 @@ export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isRest
       resetTimer(startRunningAt)
       startTimer()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startRunningAt])
 
   useEffect(() => {

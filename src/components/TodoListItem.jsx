@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { Alert, Badge, Button, CloseButton, Form, ListGroupItem, Modal } from 'react-bootstrap'
+import { Alert, Badge, Button, CloseButton, Form, ListGroupItem } from 'react-bootstrap'
 import useTodo from '@/hooks/useTodo'
 
 import crucialIcon from '../../public/icons/crucial.svg'
@@ -9,6 +9,7 @@ import crucialActiveIcon from '../../public/icons/crucial-active.svg'
 import IconButton from './IconButton'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
 import { useGlobalStore } from '@/stores/globalStore'
+import ConfirmationModal from './ConfirmationModal'
 
 export default function TodoListItem ({ initialTodo, pomodoro = false }) {
   const [todo, error, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
@@ -105,27 +106,23 @@ export default function TodoListItem ({ initialTodo, pomodoro = false }) {
         }
       </div>
 
-      {error &&
-      (
+      {error && (
         <Alert variant='danger'>
-          There was an error: {error.message}
+          There was an error
         </Alert>
       )}
 
-      <Modal show={showDeleteModal} onHide={handleCloseModal} animation={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete To-do from Pomodoro?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Hey! You're going to delete</Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleCloseModal}>
-            Cancel
-          </Button>
-          <Button variant='danger' onClick={handleClosePomodoro}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {
+        showDeleteModal && (
+          <ConfirmationModal
+            title='Delete To-do from Pomodoro?'
+            message={'Hey! You\'re going to lose the pomodoro progress. Are you sure?'}
+            onCancel={handleCloseModal}
+            onConfirm={handleClosePomodoro}
+            confirmationMessage='Delete'
+          />
+        )
+      }
     </ListGroupItem>
   )
 }

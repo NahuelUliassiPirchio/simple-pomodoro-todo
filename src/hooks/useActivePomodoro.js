@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAuthContext } from '@/contexts/authContext'
+import { useAuthContext } from '@/contexts/AuthContext'
 import { setData, updateData } from '@/services/dbService'
 import { useActivePomodoroTodoStore } from '@/stores/globalStore'
 import { increment } from 'firebase/firestore/lite'
@@ -41,7 +41,7 @@ export default function useActivePomodoro () {
     await updateData(`/users/${user.uid}/todos`, todo.id, todo)
   })
 
-  const increaseDailyPomodoro = async () => { // TODO: this shouldn't be here
+  const increaseDailyPomodoro = async () => {
     const todayString = new Date().toDateString()
 
     try {
@@ -49,7 +49,7 @@ export default function useActivePomodoro () {
         { pomodoros: increment(1) },
         true)
     } catch (error) {
-      console.error(error)
+      setError(error)
     }
   }
 

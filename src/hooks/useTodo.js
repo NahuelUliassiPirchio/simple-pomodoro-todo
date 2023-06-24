@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { deleteData, updateData } from '@/services/dbService'
-import { useAuthContext } from '@/contexts/authContext'
+import { useAuthContext } from '@/contexts/AuthContext'
 
 export default function useTodo (initialTodo, pomodoro) {
   const [todo, setTodo] = useState(initialTodo)

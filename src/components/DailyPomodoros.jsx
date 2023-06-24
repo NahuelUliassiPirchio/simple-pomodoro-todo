@@ -3,7 +3,7 @@ import { useWorkedPomsStore } from '@/stores/globalStore'
 import { useEffect } from 'react'
 
 export default function DailyPomodoros ({ user }) {
-  const { workedPoms, setWorkedPoms } = useWorkedPomsStore()
+  const { workedPoms, setWorkedPoms } = useWorkedPomsStore() // TODO: CUSTOM HOOK?
 
   useEffect(() => {
     if (!user) return
@@ -14,7 +14,7 @@ export default function DailyPomodoros ({ user }) {
       })
 
     // TODO: handle error and unsuscribe
-  }, [user])
+  }, [user, setWorkedPoms])
 
   return (
     <div className='me-2 text-white text-end'>

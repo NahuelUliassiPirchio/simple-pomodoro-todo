@@ -1,8 +1,8 @@
 'use client'
 
-import { Button, Container, Navbar, Offcanvas } from 'react-bootstrap'
+import { Button, Container, Navbar } from 'react-bootstrap'
 
-import { useAuthContext } from '@/contexts/authContext'
+import { useAuthContext } from '@/contexts/AuthContext'
 import UserAccount from './UserAccount'
 import DailyPomodoros from './DailyPomodoros'
 import SignIn from './SignIn'
@@ -18,25 +18,8 @@ export default function NavBar () {
         <Navbar.Brand href=''>
           Simpl Todo + Pomodoro 🍅
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
-        <Navbar.Offcanvas
-          id={`offcanvasNavbar-expand-${expand}`}
-          aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
-          placement='end'
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`}>
-              Offcanvas
-            </Offcanvas.Title>
-          </Offcanvas.Header>
-          {/* <Offcanvas.Body>
-            <Nav className='justify-content-center flex-grow-1 pe-3'>
-              <Nav.Link href='#action1'>Home</Nav.Link>
-              <Nav.Link href='#action2'>Link</Nav.Link>
-            </Nav>
-          </Offcanvas.Body> */}
-          <DailyPomodoros user={user} />
-        </Navbar.Offcanvas>
+
+        <DailyPomodoros user={user} />
         {
           loading
             ? (
