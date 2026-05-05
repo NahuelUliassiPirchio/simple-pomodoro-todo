@@ -1,26 +1,8 @@
-import { AuthProvider } from '@/contexts/AuthContext'
+'use client'
+import dynamic from 'next/dynamic'
 
-import NavBar from '@/components/NavBar'
-import TodoList from '@/components/TodoList'
-import NewTodo from '@/components/NewTodo'
-import Filters from '@/components/Filters'
-import PomodoroTimer from '@/components/PomodoroTimer'
-import ErrorBoundary from '@/utils/ErrorBoundary'
+const ClientApp = dynamic(() => import('./ClientApp'), { ssr: false })
 
 export default function Home () {
-  return (
-    <>
-      <AuthProvider>
-        <NavBar />
-        <main className='container'>
-          <ErrorBoundary>
-            <NewTodo />
-            <Filters />
-            <PomodoroTimer />
-            <TodoList />
-          </ErrorBoundary>
-        </main>
-      </AuthProvider>
-    </>
-  )
+  return <ClientApp />
 }

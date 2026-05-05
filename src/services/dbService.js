@@ -12,16 +12,10 @@ export const getData = async (path, activeFilter) => {
   const querySnapshot = query(collection(db, path), activeFilter && filters[activeFilter])
   const response = await getDocs(querySnapshot)
 
-  return response.docs.map(doc => {
-    const documentTimestamp = doc._document.createTime
-    const documentDate = documentTimestamp.toTimestamp().toDate()
-
-    return {
-      id: doc.id,
-      ...doc.data(),
-      createDate: documentDate
-    }
-  })
+  return response.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }))
 }
 
 export const getDataById = (path, id) => {
