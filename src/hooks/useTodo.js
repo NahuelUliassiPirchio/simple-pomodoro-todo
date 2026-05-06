@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { deleteData, updateData } from '@/services/dbService'
 import { useAuthContext } from '@/contexts/AuthContext'
+import { toast } from 'sonner'
 
 export default function useTodo (initialTodo, pomodoro) {
   const [todo, setTodo] = useState(initialTodo)
-  const [error, setError] = useState(null)
   const [showEdit, setShowEdit] = useState(false)
   const { user } = useAuthContext()
   const mounted = useRef(false)
@@ -14,7 +14,7 @@ export default function useTodo (initialTodo, pomodoro) {
       await deleteData(`users/${user.uid}/todos`, todo.id)
       setTodo(null)
     } catch (error) {
-      setError(error)
+      toast.error('Failed to delete todo, please try again.')
     }
   }
 
@@ -54,11 +54,11 @@ export default function useTodo (initialTodo, pomodoro) {
           crucial: todo.crucial
         })
       } catch (error) {
-        setError(error)
+        toast.error('Failed to update todo, please try again.')
       }
     }
     updateTodo()
   }, [todo, user, initialTodo])
 
-  return [todo, error, showEdit, handleEdit, handleDelete, handleSave]
+  return [todo, showEdit, handleEdit, handleDelete, handleSave]
 }

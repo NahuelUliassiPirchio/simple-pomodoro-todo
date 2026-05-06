@@ -3,25 +3,21 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { setData, updateData } from '@/services/dbService'
 import { useActivePomodoroTodoStore } from '@/stores/globalStore'
 import { increment } from 'firebase/firestore/lite'
+import { toast } from 'sonner'
 
 export default function useActivePomodoro () {
   const activePomodoroGlobal = useActivePomodoroTodoStore(state => state.activePomodoroTodo)
   const setActivePomodoro = useActivePomodoroTodoStore(state => state.updateActivePomodoroTodo)
 
-  const [loading, setLoading] = React.useState(true)
-  const [error, setError] = React.useState(null)
-
   const { user } = useAuthContext()
 
   const updateActivePomodoro = async (activePomodoro, updateFunction) => {
-    setLoading(true)
     try {
       await updateFunction()
       setActivePomodoro(activePomodoro)
     } catch (error) {
-      setError(error)
+      toast.error('Failed to update pomodoro, please try again.')
     }
-    setLoading(false)
   }
 
   const removeActivePomodoro = () => updateActivePomodoro(null, () => setData(`/users/${user.uid}/todos`, 'activePomodoro', null))
@@ -49,14 +45,12 @@ export default function useActivePomodoro () {
         { pomodoros: increment(1) },
         true)
     } catch (error) {
-      setError(error)
+      toast.error('Failed to save daily pomodoro count.')
     }
   }
 
   return {
     activePomodoro: activePomodoroGlobal,
-    loading,
-    error,
     createActivePomodoro,
     editActivePomodoro,
     removeActivePomodoro,

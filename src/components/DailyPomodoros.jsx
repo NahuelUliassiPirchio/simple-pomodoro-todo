@@ -1,9 +1,10 @@
 import { getDataById } from '@/services/dbService'
 import { useWorkedPomsStore } from '@/stores/globalStore'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 export default function DailyPomodoros ({ user }) {
-  const { workedPoms, setWorkedPoms } = useWorkedPomsStore() // TODO: CUSTOM HOOK?
+  const { workedPoms, setWorkedPoms } = useWorkedPomsStore()
 
   useEffect(() => {
     if (!user) return
@@ -12,8 +13,9 @@ export default function DailyPomodoros ({ user }) {
       .then(data => {
         setWorkedPoms(data.data()?.pomodoros || 0)
       })
-
-    // TODO: handle error and unsuscribe
+      .catch(() => {
+        toast.error('Failed to load daily pomodoro count.')
+      })
   }, [user, setWorkedPoms])
 
   return (

@@ -1,23 +1,22 @@
 import { Button, Container } from 'react-bootstrap'
 import Image from 'next/image'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import anonymousIcon from '@/../public/icons/anonymous.svg'
 import { mergeAccount, signOut } from '@/services/authService'
 import { PROVIDER_GOOGLE } from '@/constants/auth'
 
 import ConfirmationModal from './ConfirmationModal'
-import ToastWarning from './Toast'
 
 export default function UserAccount ({ user }) {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
-  const [error, setError] = useState(null)
 
   const handleLogOut = async () => {
     try {
       await signOut()
     } catch (error) {
-      setError('There was an error logging out')
+      toast.error('There was an error logging out')
     }
   }
 
@@ -25,7 +24,7 @@ export default function UserAccount ({ user }) {
     try {
       await mergeAccount(PROVIDER_GOOGLE)
     } catch (error) {
-      setError('There was an error mergin your account')
+      toast.error('There was an error merging your account')
     }
   }
 
@@ -60,17 +59,13 @@ export default function UserAccount ({ user }) {
       {
         showConfirmationModal && (
           <ConfirmationModal
-            title='Delete To-do from Pomodoro?'
-            message={'Hey! You\'re going to lose the pomodoro progress. Are you sure?'}
+            title='Log out?'
+            message="You're browsing as a guest. Your data will be lost if you log out without linking your account. Are you sure?"
             onCancel={() => setShowConfirmationModal(false)}
             onConfirm={handleLogOut}
-            confirmationMessage='Delete'
+            confirmationMessage='Log Out'
           />
         )
-      }
-
-      {
-        error && <ToastWarning message={error} onClose={() => setError(null)} />
       }
     </nav>
   )

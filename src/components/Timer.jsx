@@ -19,7 +19,7 @@ export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isRest
   useEffect(() => {
     const handleExit = (e) => {
       localStorage.setItem('isResting', isResting)
-      localStorage.setItem('time', `${minutes}:${seconds}`)
+      localStorage.setItem('time', `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`)
     }
 
     if (isRunning) {

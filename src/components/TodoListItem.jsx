@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { Alert, Badge, Button, CloseButton, Form, ListGroupItem } from 'react-bootstrap'
+import { Badge, Button, CloseButton, Form, ListGroupItem } from 'react-bootstrap'
 import useTodo from '@/hooks/useTodo'
 
 import crucialIcon from '../../public/icons/crucial.svg'
@@ -12,7 +12,7 @@ import { useGlobalStore } from '@/stores/globalStore'
 import ConfirmationModal from './ConfirmationModal'
 
 export default function TodoListItem ({ initialTodo, pomodoro = false }) {
-  const [todo, error, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
+  const [todo, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
 
   const { createActivePomodoro, removeActivePomodoro } = useActivePomodoro()
   const { setNewTodo } = useGlobalStore()
@@ -105,12 +105,6 @@ export default function TodoListItem ({ initialTodo, pomodoro = false }) {
 
         }
       </div>
-
-      {error && (
-        <Alert variant='danger'>
-          There was an error
-        </Alert>
-      )}
 
       {
         showDeleteModal && (

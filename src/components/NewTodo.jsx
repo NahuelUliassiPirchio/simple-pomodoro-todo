@@ -1,7 +1,8 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { Alert, Button, Form, Row, Spinner } from 'react-bootstrap'
+import { useRef } from 'react'
+import { Button, Form, Row, Spinner } from 'react-bootstrap'
+import { toast } from 'sonner'
 import { addData } from '@/services/dbService'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useGlobalStore, useSignInStore } from '@/stores/globalStore'
@@ -11,7 +12,6 @@ export default function NewTodo () {
 
   const { user, loading } = useAuthContext()
   const { setNewTodo } = useGlobalStore()
-  const [error, setError] = useState(null)
   const { setShowSignInModal } = useSignInStore()
 
   const handleSubmit = async (e) => {
@@ -21,8 +21,6 @@ export default function NewTodo () {
 
     if (!user) return setShowSignInModal(true)
 
-    setError(false)
-
     try {
       const newTodo = {
         text: todoRef.current.value,
@@ -30,13 +28,13 @@ export default function NewTodo () {
         crucial: false
       }
 
-      const newTtodoDocuent = await addData(`users/${user.uid}/todos`, newTodo)
-      newTodo.id = newTtodoDocuent.id
+      const newTodoDocument = await addData(`users/${user.uid}/todos`, newTodo)
+      newTodo.id = newTodoDocument.id
       setNewTodo(newTodo)
 
       todoRef.current.value = ''
     } catch (error) {
-      setError('There was an error creating the todo item, please try again.')
+      toast.error('Failed to create todo, please try again.')
     }
   }
 
@@ -62,7 +60,6 @@ export default function NewTodo () {
           }
         </Button>
       </Row>
-      {error && <Alert variant='danger'>{error}</Alert>}
     </Form>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Alert from 'react-bootstrap/Alert'
+import { toast } from 'sonner'
 
 import { getData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
@@ -10,7 +11,6 @@ import { useActivePomodoroTodoStore, useFiltersStore, useGlobalStore } from '@/s
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
-  const [error, setError] = useState(null)
 
   const { user, loading } = useAuthContext()
   const newTodo = useGlobalStore(state => state.newTodo)
@@ -22,8 +22,6 @@ export default function TodoList () {
     if (!user || loading) {
       return
     }
-
-    console.log('llamado')
 
     const getTodos = async () => {
       try {
@@ -39,12 +37,11 @@ export default function TodoList () {
 
         setTodos(todos)
       } catch (error) {
-        setError(error)
+        toast.error('Failed to load todos, please try again.')
       }
     }
 
     getTodos()
-    // TODO: fix this
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user, filter])
 
@@ -63,14 +60,6 @@ export default function TodoList () {
     return (
       <Alert variant='danger'>
         You need to sign in to see your todos
-      </Alert>
-    )
-  }
-
-  if (error) {
-    return (
-      <Alert variant='danger'>
-        {error.message}
       </Alert>
     )
   }

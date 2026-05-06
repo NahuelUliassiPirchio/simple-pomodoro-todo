@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap'
+import { toast } from 'sonner'
 import Timer from './Timer'
 import TodoListItem from './TodoListItem'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
@@ -16,23 +17,26 @@ export default function PomodoroTimer () {
   const [isResting, setIsResting] = useState(false)
   const [startRunningAt, setStartRunningAt] = useState(null)
 
-  const { activePomodoro, editActivePomodoro, increaseDailyPomodoro } = useActivePomodoro() // TODO: SHOW ERROR
+  const { activePomodoro, editActivePomodoro, increaseDailyPomodoro } = useActivePomodoro()
   const { increaseWorkedPoms } = useWorkedPomsStore()
 
   const handleTimeUp = async () => {
     setRemainingTime(!isResting ? intialTimePeriods.rest : intialTimePeriods.work)
-
     setIsResting(!isResting)
 
     if (!isResting) {
-      await Promise.all([
-        activePomodoro && editActivePomodoro({
-          ...activePomodoro,
-          pomodoros: !isNaN(activePomodoro.pomodoros) ? activePomodoro.pomodoros + 1 : 1
-        }),
-        increaseDailyPomodoro()
-      ])
-      increaseWorkedPoms()
+      try {
+        await Promise.all([
+          activePomodoro && editActivePomodoro({
+            ...activePomodoro,
+            pomodoros: !isNaN(activePomodoro.pomodoros) ? activePomodoro.pomodoros + 1 : 1
+          }),
+          increaseDailyPomodoro()
+        ])
+        increaseWorkedPoms()
+      } catch (error) {
+        toast.error('Failed to save pomodoro progress.')
+      }
     }
 
     const doneAudio = new Audio('/audio/done_audio.mp3')
