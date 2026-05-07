@@ -55,7 +55,7 @@ export default function NewTodo () {
                 />
                 )
               : (
-                  'Add to-do'
+                  'Add todo'
                 )
           }
         </Button>
