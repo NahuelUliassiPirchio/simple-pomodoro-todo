@@ -1,7 +1,20 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-// TODO: improve this
+export const useSettingsStore = create(
+  persist(
+    (set) => ({
+      isDark: false,
+      workTime: 25,
+      restTime: 5,
+      toggleDark: () => set(state => ({ isDark: !state.isDark })),
+      setWorkTime: (workTime) => set({ workTime }),
+      setRestTime: (restTime) => set({ restTime })
+    }),
+    { name: 'settings-storage' }
+  )
+)
+
 export const useGlobalStore = create((set) => ({
   newTodo: null,
   setNewTodo: (todo) => set({ newTodo: todo })

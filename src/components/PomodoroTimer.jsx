@@ -6,23 +6,28 @@ import { toast } from 'sonner'
 import Timer from './Timer'
 import TodoListItem from './TodoListItem'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
-import { useWorkedPomsStore } from '@/stores/globalStore'
+import { useSettingsStore, useWorkedPomsStore } from '@/stores/globalStore'
 
-const intialTimePeriods = {
-  work: 25 * 60,
-  rest: 5 * 60
-}
 export default function PomodoroTimer () {
-  const [remainingTime, setRemainingTime] = useState(intialTimePeriods.work)
+  const { workTime, restTime } = useSettingsStore()
+
+  const [remainingTime, setRemainingTime] = useState(workTime * 60)
   const [isResting, setIsResting] = useState(false)
   const [startRunningAt, setStartRunningAt] = useState(null)
 
   const { activePomodoro, editActivePomodoro, increaseDailyPomodoro } = useActivePomodoro()
   const { increaseWorkedPoms } = useWorkedPomsStore()
 
+  useEffect(() => {
+    setIsResting(false)
+    setRemainingTime(workTime * 60)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workTime, restTime])
+
   const handleTimeUp = async () => {
-    setRemainingTime(!isResting ? intialTimePeriods.rest : intialTimePeriods.work)
-    setIsResting(!isResting)
+    const nextIsResting = !isResting
+    setIsResting(nextIsResting)
+    setRemainingTime(nextIsResting ? restTime * 60 : workTime * 60)
 
     if (!isResting) {
       try {
@@ -59,12 +64,13 @@ export default function PomodoroTimer () {
       const timeInS = parseInt(minutes) * 60 + parseInt(seconds)
 
       setIsResting(itWasResting)
-      setRemainingTime(itWasResting ? intialTimePeriods.rest : intialTimePeriods.work)
+      setRemainingTime(itWasResting ? restTime * 60 : workTime * 60)
       setStartRunningAt(timeInS)
 
       localStorage.removeItem('time')
       localStorage.removeItem('isResting')
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

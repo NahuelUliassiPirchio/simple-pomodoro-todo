@@ -1,0 +1,28 @@
+.slider {
+  accent-color: var(--bs-primary);
+  height: 6px;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bs-border-color);
+}
+
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bs-border-color);
+}
+
+.timeDisplay {
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+.numberInput {
+  width: 64px;
+}

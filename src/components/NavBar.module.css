@@ -1,0 +1,23 @@
+.iconBtn {
+  border: none !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  padding: 0.3rem 0.4rem;
+  line-height: 1;
+  border-radius: 6px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBtn:hover,
+.iconBtn:focus-visible {
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.iconBtn:active {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
