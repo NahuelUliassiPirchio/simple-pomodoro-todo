@@ -67,6 +67,16 @@ export function DragHandleIcon ({ size = 16 }) {
   )
 }
 
+export function ChartIcon ({ size = 16 }) {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' width={size} height={size} viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+      <rect x='3' y='12' width='4' height='8' />
+      <rect x='10' y='7' width='4' height='13' />
+      <rect x='17' y='3' width='4' height='17' />
+    </svg>
+  )
+}
+
 export function GearIcon ({ size = 16 }) {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width={size} height={size} viewBox='0 0 24 24' fill='currentColor'>

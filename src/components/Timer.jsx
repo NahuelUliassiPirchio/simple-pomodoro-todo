@@ -17,18 +17,22 @@ export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isRest
   }, [startRunningAt])
 
   useEffect(() => {
-    const handleExit = (e) => {
+    const saveState = () => {
       localStorage.setItem('isResting', isResting)
       localStorage.setItem('time', `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`)
+      localStorage.setItem('timerSavedAt', String(Date.now()))
     }
 
     if (isRunning) {
-      window.addEventListener('beforeunload', handleExit)
+      window.addEventListener('beforeunload', saveState)
     } else {
-      window.removeEventListener('beforeunload', handleExit)
+      window.removeEventListener('beforeunload', saveState)
     }
 
-    return () => window.removeEventListener('beforeunload', handleExit)
+    return () => {
+      window.removeEventListener('beforeunload', saveState)
+      if (isRunning) saveState()
+    }
   }, [isRunning, seconds, minutes, isResting])
 
   const handleStart = (e) => {

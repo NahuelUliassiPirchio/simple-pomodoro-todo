@@ -58,10 +58,16 @@ export default function PomodoroTimer () {
   useEffect(() => {
     const lastTime = localStorage.getItem('time')
     const itWasResting = localStorage.getItem('isResting') === 'true'
+    const savedAt = localStorage.getItem('timerSavedAt')
 
     if (lastTime) {
-      const [minutes, seconds] = lastTime.split(':')
-      const timeInS = parseInt(minutes) * 60 + parseInt(seconds)
+      const [mins, secs] = lastTime.split(':')
+      let timeInS = parseInt(mins) * 60 + parseInt(secs)
+
+      if (savedAt) {
+        const elapsed = Math.floor((Date.now() - parseInt(savedAt)) / 1000)
+        timeInS = Math.max(1, timeInS - elapsed)
+      }
 
       setIsResting(itWasResting)
       setRemainingTime(itWasResting ? restTime * 60 : workTime * 60)
@@ -69,6 +75,7 @@ export default function PomodoroTimer () {
 
       localStorage.removeItem('time')
       localStorage.removeItem('isResting')
+      localStorage.removeItem('timerSavedAt')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

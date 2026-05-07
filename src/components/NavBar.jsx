@@ -9,7 +9,8 @@ import UserAccount from './UserAccount'
 import DailyPomodoros from './DailyPomodoros'
 import SignIn from './SignIn'
 import SettingsOffcanvas from './SettingsOffcanvas'
-import { GearIcon, MoonIcon, SunIcon } from './Icons'
+import Link from 'next/link'
+import { ChartIcon, GearIcon, MoonIcon, SunIcon } from './Icons'
 import styles from './NavBar.module.css'
 
 export default function NavBar () {
@@ -33,6 +34,9 @@ export default function NavBar () {
             <button className={styles.iconBtn} onClick={toggleDark} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
               {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
             </button>
+            <Link href='/stats' className={styles.iconBtn} title='Productivity stats'>
+              <ChartIcon size={18} />
+            </Link>
             <button className={styles.iconBtn} onClick={() => setShowSettings(true)} title='Settings'>
               <GearIcon size={18} />
             </button>

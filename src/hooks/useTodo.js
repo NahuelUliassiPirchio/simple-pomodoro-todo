@@ -54,7 +54,8 @@ export default function useTodo (initialTodo, pomodoro) {
         await updateData(`users/${user.uid}/todos`, todo.id, {
           text: todo.text,
           completed: todo.completed,
-          crucial: todo.crucial
+          crucial: todo.crucial,
+          ...(todo.completed && { completedAt: todo.completedAt || new Date().toISOString() })
         })
       } catch (error) {
         toast.error('Failed to update todo, please try again.')
