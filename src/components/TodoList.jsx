@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Alert from 'react-bootstrap/Alert'
+
 import { toast } from 'sonner'
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
@@ -11,6 +11,23 @@ import TodoListItem from './TodoListItem'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useActivePomodoroTodoStore, useFiltersStore, useGlobalStore } from '@/stores/globalStore'
 import { filterEmptyMessages, draggableFilters } from '@/utils/filters'
+
+function EmptyState ({ icon, title, description }) {
+  return (
+    <div className='text-center py-5 px-4 rounded-4' style={{ border: '1px dashed var(--bs-border-color)' }}>
+      <div
+        className='d-inline-flex align-items-center justify-content-center rounded-circle mb-3'
+        style={{ width: 64, height: 64, background: 'var(--bs-primary-bg-subtle)', fontSize: '1.75rem' }}
+      >
+        {icon}
+      </div>
+      <h5 className='fw-semibold mb-2'>{title}</h5>
+      <p className='text-muted mb-0 mx-auto' style={{ maxWidth: '26ch', fontSize: '0.875rem', lineHeight: 1.6 }}>
+        {description}
+      </p>
+    </div>
+  )
+}
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
@@ -94,16 +111,18 @@ export default function TodoList () {
   if (loading) return <div>Loading...</div>
 
   if (!user && !loading) {
-    return (
-      <Alert variant='danger'>
-        You need to sign in to see your todos
-      </Alert>
-    )
+    return <EmptyState icon='🔒' title='Sign in to see your todos' description='Your tasks are waiting for you — sign in to get started.' />
+  }
+
+  const emptyState = filterEmptyMessages[filter] ?? {
+    icon: '📝',
+    title: 'No todos yet!',
+    description: 'Type your first task above and press Enter to add it.'
   }
 
   return (
     (todos.length === 0 && !loading)
-      ? <Alert variant='info'>{filterEmptyMessages[filter] ?? 'You have no todos'}</Alert>
+      ? <EmptyState {...emptyState} />
       : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={todos.map(t => t.id)} strategy={verticalListSortingStrategy}>

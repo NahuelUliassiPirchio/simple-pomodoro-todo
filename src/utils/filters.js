@@ -10,9 +10,21 @@ export const filters = {
 }
 
 export const filterEmptyMessages = {
-  crucial: 'You have no crucial todos',
-  completed: 'You have no completed todos',
-  notCompleted: 'You have no pending todos'
+  crucial: {
+    icon: '⭐',
+    title: 'No crucial todos',
+    description: 'Star a todo to mark it as crucial and see it here.'
+  },
+  completed: {
+    icon: '✅',
+    title: 'Nothing completed yet',
+    description: 'Finish a todo to see your progress here.'
+  },
+  notCompleted: {
+    icon: '🎉',
+    title: 'All caught up!',
+    description: "No pending todos — you're on top of everything."
+  }
 }
 
 export const draggableFilters = new Set(['none', 'crucial', 'completed', 'notCompleted'])
