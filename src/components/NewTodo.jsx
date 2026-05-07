@@ -1,11 +1,12 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Button, Form, Spinner } from 'react-bootstrap'
+import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { toast } from 'sonner'
 import { addData } from '@/services/dbService'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useGlobalStore, useProjectsStore, useSignInStore } from '@/stores/globalStore'
+import useProjectsList from '@/hooks/useProjectsList'
 
 const PLACEHOLDERS = [
   'What needs to be done?',
@@ -24,10 +25,14 @@ export default function NewTodo () {
     setPlaceholderIndex(i => (i + 1) % PLACEHOLDERS.length)
   }
 
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false)
+  const newProjectRef = useRef()
+
   const { user, loading } = useAuthContext()
   const { setNewTodo } = useGlobalStore()
   const { setShowSignInModal } = useSignInStore()
   const availableProjects = useProjectsStore(state => state.availableProjects)
+  const { createProject } = useProjectsList()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -58,33 +63,78 @@ export default function NewTodo () {
   }
 
   return (
-    <Form className='container mt-3 mb-3' onSubmit={handleSubmit}>
-      <div className='d-flex gap-2'>
-        <Form.Control
-          type='text'
-          placeholder={PLACEHOLDERS[placeholderIndex]}
-          ref={todoRef}
-          style={{ flex: 1 }}
-          onFocus={() => availableProjects.length > 0 && setShowProjectSelect(true)}
-        />
-        {showProjectSelect && (
-          <Form.Select
-            value={selectedProject}
-            onChange={e => setSelectedProject(e.target.value)}
-            style={{ width: 180, flexShrink: 0 }}
-          >
-            <option value=''>No project</option>
-            {availableProjects.map(p => (
-              <option key={p.id} value={p.name}>{p.name}</option>
-            ))}
-          </Form.Select>
-        )}
-        <Button variant='primary' type='submit' style={{ flexShrink: 0 }}>
-          {loading
-            ? <Spinner as='span' animation='border' size='sm' role='status' aria-hidden='true' />
-            : 'Add'}
-        </Button>
-      </div>
-    </Form>
+    <>
+      <Form className='container mt-3 mb-3' onSubmit={handleSubmit}>
+        <div className='d-flex gap-2'>
+          <Form.Control
+            type='text'
+            placeholder={PLACEHOLDERS[placeholderIndex]}
+            ref={todoRef}
+            style={{ flex: 1 }}
+            onFocus={() => availableProjects.length > 0 && setShowProjectSelect(true)}
+          />
+          {showProjectSelect && (
+            <Form.Select
+              value={selectedProject}
+              onChange={e => {
+                if (e.target.value === '__new__') {
+                  setShowNewProjectDialog(true)
+                } else {
+                  setSelectedProject(e.target.value)
+                }
+              }}
+              style={{ width: 180, flexShrink: 0 }}
+            >
+              <option value=''>No project</option>
+              {availableProjects.map(p => (
+                <option key={p.id} value={p.name}>{p.name}</option>
+              ))}
+              <option value='__new__'>+ New project...</option>
+            </Form.Select>
+          )}
+          <Button variant='primary' type='submit' style={{ flexShrink: 0 }}>
+            {loading
+              ? <Spinner as='span' animation='border' size='sm' role='status' aria-hidden='true' />
+              : 'Add'}
+          </Button>
+        </div>
+      </Form>
+
+      <Modal
+        show={showNewProjectDialog}
+        onHide={() => setShowNewProjectDialog(false)}
+        animation={false}
+        size='sm'
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>New project</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={async (e) => {
+          e.preventDefault()
+          const name = newProjectRef.current?.value
+          if (!name?.trim()) return
+          const created = await createProject(name)
+          if (created) {
+            setSelectedProject(created.name)
+            setShowNewProjectDialog(false)
+            newProjectRef.current.value = ''
+          }
+        }}
+        >
+          <Modal.Body>
+            <Form.Control
+              ref={newProjectRef}
+              placeholder='Project name'
+              autoFocus
+              onKeyDown={e => { if (e.key === 'Escape') setShowNewProjectDialog(false) }}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant='secondary' onClick={() => setShowNewProjectDialog(false)}>Cancel</Button>
+            <Button variant='primary' type='submit'>Create</Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    </>
   )
 }

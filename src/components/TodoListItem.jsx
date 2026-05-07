@@ -1,27 +1,27 @@
 'use client'
 
 import { useId, useRef, useState } from 'react'
-import { Badge, Button, CloseButton, Form, ListGroupItem } from 'react-bootstrap'
+import { Badge, Button, Form, ListGroupItem } from 'react-bootstrap'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import useTodo from '@/hooks/useTodo'
 
 import IconButton from './IconButton'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
-import { useGlobalStore, useProjectsStore } from '@/stores/globalStore'
+import { useProjectsStore } from '@/stores/globalStore'
 import ConfirmationModal from './ConfirmationModal'
 import { DragHandleIcon, PomodoroIcon, CrucialIcon, CrucialActiveIcon } from './Icons'
 
-export default function TodoListItem ({ initialTodo, pomodoro = false, draggable = true, onTodoChange }) {
-  const [todo, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
+export default function TodoListItem ({ initialTodo, draggable = true, onTodoChange }) {
+  const [todo, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo)
 
-  const { createActivePomodoro, removeActivePomodoro } = useActivePomodoro()
-  const { setNewTodo } = useGlobalStore()
+  const { activePomodoro, createActivePomodoro, removeActivePomodoro } = useActivePomodoro()
   const availableProjects = useProjectsStore(state => state.availableProjects)
+
+  const isActivePomodo = !!activePomodoro && initialTodo.id === activePomodoro.id
 
   const checkboxId = useId()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [isActivePomodo, setIsActivePomodoro] = useState(false)
   const textEditRef = useRef()
   const projectEditRef = useRef()
 
@@ -31,10 +31,12 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 1 : 'auto'
+    zIndex: isDragging ? 1 : 'auto',
+    ...(isActivePomodo && {
+      borderLeft: '3px solid var(--bs-primary)',
+      backgroundColor: 'rgba(var(--bs-primary-rgb), 0.06)'
+    })
   }
-
-  const handleCloseModal = () => setShowDeleteModal(false)
 
   const handleDoubleClick = () => {
     if (todo.completed) return
@@ -44,13 +46,11 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
   const handlePomodoro = async () => {
     if (todo.completed) return
     await createActivePomodoro(todo)
-    setIsActivePomodoro(true)
   }
 
-  const handleClosePomodoro = async () => {
+  const handleRemovePomodoro = async () => {
     await removeActivePomodoro()
     setShowDeleteModal(false)
-    setNewTodo(todo)
   }
 
   const saveEdit = () => {
@@ -62,11 +62,13 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
     onTodoChange?.({ ...todo, ...changes })
   }
 
-  if (!todo || isActivePomodo) return null
+  if (!todo) return null
+
+  const pomodorosCount = isActivePomodo ? (activePomodoro.pomodoros || 0) : 0
 
   return (
     <ListGroupItem as='li' ref={setNodeRef} style={style} onDoubleClick={handleDoubleClick} className='d-flex align-items-center gap-2'>
-      {!pomodoro && draggable && (
+      {draggable && (
         <span
           {...attributes}
           {...listeners}
@@ -84,7 +86,7 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
             checked={todo.completed}
             onChange={async () => {
               handleSave({ completed: !todo.completed })
-              if (pomodoro) handleClosePomodoro()
+              if (isActivePomodo) handleRemovePomodoro()
             }}
           />
           {showEdit
@@ -125,18 +127,21 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
       </div>
 
       <div className='d-flex gap-2 align-items-center flex-shrink-0'>
-        {todo.pomodoros && (
-          <span>
-            <Badge bg='success'>{`${todo.pomodoros} Pomodoro${todo.pomodoros > 1 ? 's' : ''} completed`}</Badge>
-          </span>
+        {isActivePomodo && pomodorosCount > 0 && (
+          <Badge bg='success'>{`${pomodorosCount} Pomodoro${pomodorosCount > 1 ? 's' : ''} completed`}</Badge>
         )}
-        {!pomodoro
-          ? showEdit
+        {showEdit
+          ? (
+            <>
+              <Button variant='success' size='sm' onClick={saveEdit}>Save</Button>
+              <Button variant='secondary' size='sm' className='me-2' onClick={handleEdit}>Cancel</Button>
+            </>
+            )
+          : isActivePomodo
             ? (
-              <>
-                <Button variant='success' size='sm' onClick={saveEdit}>Save</Button>
-                <Button variant='secondary' size='sm' className='me-2' onClick={handleEdit}>Cancel</Button>
-              </>
+              <Button variant='outline-danger' size='sm' className='me-2' onClick={() => setShowDeleteModal(true)}>
+                Remove from Pomodoro
+              </Button>
               )
             : (
               <>
@@ -145,19 +150,16 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
                 <Button variant='primary' onClick={handleEdit} disabled={todo.completed}>Edit</Button>
                 <Button variant='danger' className='me-2' onClick={handleDelete}>Delete</Button>
               </>
-              )
-          : (
-            <CloseButton onClick={() => setShowDeleteModal(true)} />
-            )}
+              )}
       </div>
 
       {showDeleteModal && (
         <ConfirmationModal
-          title='Delete Todo from Pomodoro?'
-          message="Hey! You're going to lose the pomodoro progress. Are you sure?"
-          onCancel={handleCloseModal}
-          onConfirm={handleClosePomodoro}
-          confirmationMessage='Delete'
+          title='Remove from Pomodoro'
+          message='Remove this task from the active Pomodoro? Your progress count will be kept on the task.'
+          onCancel={() => setShowDeleteModal(false)}
+          onConfirm={handleRemovePomodoro}
+          confirmationMessage='Remove'
         />
       )}
     </ListGroupItem>

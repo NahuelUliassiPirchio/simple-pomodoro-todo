@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap'
 import { toast } from 'sonner'
 import Timer from './Timer'
-import TodoListItem from './TodoListItem'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
 import { useSettingsStore, useWorkedPomsStore } from '@/stores/globalStore'
 
@@ -82,13 +81,6 @@ export default function PomodoroTimer () {
 
   return (
     <Container as='section' className='d-flex flex-column justify-content-center mb-3 text-center'>
-      {
-        activePomodoro && (
-          <div className='text-start m-3 mb-1'>
-            <TodoListItem initialTodo={activePomodoro} pomodoro />
-          </div>
-        )
-      }
       <h1>{isResting ? 'Resting' : 'Working'}</h1>
       <Timer initialTimeInS={remainingTime} onTimeUp={handleTimeUp} isResting={isResting} startRunningAt={startRunningAt} />
     </Container>

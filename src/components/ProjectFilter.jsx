@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { Badge, Button, Form } from 'react-bootstrap'
+import { useState } from 'react'
+import { Badge } from 'react-bootstrap'
 import { useProjectsStore } from '@/stores/globalStore'
 import useProjectsList from '@/hooks/useProjectsList'
 import ConfirmationModal from './ConfirmationModal'
@@ -12,99 +12,65 @@ export default function ProjectFilter () {
   const toggleProject = useProjectsStore(state => state.toggleProject)
   const clearSelectedProjects = useProjectsStore(state => state.clearSelectedProjects)
 
-  const { createProject, deleteProject } = useProjectsList()
+  const { deleteProject } = useProjectsList()
 
-  const [showInput, setShowInput] = useState(false)
+  const [hoveredProject, setHoveredProject] = useState(null)
   const [projectToDelete, setProjectToDelete] = useState(null)
-  const inputRef = useRef()
 
   const allSelected = selectedProjects.length === 0
-
-  const handleCreateSubmit = async (e) => {
-    e.preventDefault()
-    const name = inputRef.current?.value
-    if (!name?.trim()) return
-    const created = await createProject(name)
-    if (created) {
-      inputRef.current.value = ''
-      setShowInput(false)
-    }
-  }
 
   const handleConfirmDelete = async () => {
     await deleteProject(projectToDelete)
     setProjectToDelete(null)
   }
 
+  if (availableProjects.length === 0) return null
+
   return (
     <section className='mb-2'>
-      {availableProjects.length > 0 && (
-        <div className='d-flex flex-wrap align-items-center gap-2 mb-2'>
-          <Badge
-            as='button'
-            pill
-            bg={allSelected ? 'primary' : 'secondary'}
-            onClick={clearSelectedProjects}
-            style={{ cursor: 'pointer', border: 'none' }}
-          >
-            All
-          </Badge>
+      <div className='d-flex flex-wrap align-items-center gap-2'>
+        <Badge
+          as='button'
+          pill
+          bg={allSelected ? 'primary' : 'secondary'}
+          onClick={clearSelectedProjects}
+          style={{ cursor: 'pointer', border: 'none' }}
+        >
+          All
+        </Badge>
 
-          {availableProjects.map(project => (
-            <div key={project.id} className='d-inline-flex align-items-center gap-1'>
-              <Badge
-                as='button'
-                pill
-                bg={selectedProjects.includes(project.name) ? 'primary' : 'secondary'}
-                onClick={() => toggleProject(project.name)}
-                style={{ cursor: 'pointer', border: 'none' }}
-              >
-                {project.name}
-              </Badge>
-              <button
-                onClick={() => setProjectToDelete(project)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: '0 2px',
-                  cursor: 'pointer',
-                  color: 'var(--bs-secondary)',
-                  fontSize: '0.8rem',
-                  lineHeight: 1
-                }}
+        {availableProjects.map(project => (
+          <div
+            key={project.id}
+            className='d-inline-flex'
+            onMouseEnter={() => setHoveredProject(project.id)}
+            onMouseLeave={() => setHoveredProject(null)}
+          >
+            <Badge
+              as='button'
+              pill
+              bg={selectedProjects.includes(project.name) ? 'primary' : 'secondary'}
+              onClick={() => toggleProject(project.name)}
+              style={{ cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+            >
+              {project.name}
+              <span
+                role='button'
+                onClick={e => { e.stopPropagation(); setProjectToDelete(project) }}
                 title={`Delete ${project.name}`}
+                style={{
+                  opacity: hoveredProject === project.id ? 1 : 0,
+                  transition: 'opacity 0.15s',
+                  lineHeight: 1,
+                  fontSize: '1em'
+                }}
               >
                 ×
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {showInput
-        ? (
-          <Form onSubmit={handleCreateSubmit} className='d-inline-flex gap-1'>
-            <Form.Control
-              ref={inputRef}
-              size='sm'
-              placeholder='Project name'
-              autoFocus
-              onKeyDown={e => { if (e.key === 'Escape') setShowInput(false) }}
-              style={{ width: 160 }}
-            />
-            <Button type='submit' size='sm' variant='primary'>Create</Button>
-            <Button size='sm' variant='outline-secondary' onClick={() => setShowInput(false)}>✕</Button>
-          </Form>
-          )
-        : (
-          <button
-            onClick={() => setShowInput(true)}
-            className='btn btn-sm btn-outline-secondary'
-            style={{ fontSize: '0.78rem' }}
-          >
-            + New project
-          </button>
-          )}
+              </span>
+            </Badge>
+          </div>
+        ))}
+      </div>
 
       {projectToDelete && (
         <ConfirmationModal
