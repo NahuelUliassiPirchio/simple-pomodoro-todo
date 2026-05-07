@@ -10,6 +10,7 @@ import { getData, updateData } from '@/services/dbService'
 import TodoListItem from './TodoListItem'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useActivePomodoroTodoStore, useFiltersStore, useGlobalStore } from '@/stores/globalStore'
+import { filterEmptyMessages, draggableFilters } from '@/utils/filters'
 
 export default function TodoList () {
   const [todos, setTodos] = useState([])
@@ -42,12 +43,14 @@ export default function TodoList () {
           updateActivePomodoro(activePomodoro)
         }
 
-        todos.sort((a, b) => {
-          if (a.order === undefined && b.order === undefined) return 0
-          if (a.order === undefined) return 1
-          if (b.order === undefined) return -1
-          return a.order - b.order
-        })
+        if (draggableFilters.has(filter)) {
+          todos.sort((a, b) => {
+            if (a.order === undefined && b.order === undefined) return 0
+            if (a.order === undefined) return 1
+            if (b.order === undefined) return -1
+            return a.order - b.order
+          })
+        }
 
         setTodos(todos)
       } catch (error) {
@@ -100,12 +103,18 @@ export default function TodoList () {
 
   return (
     (todos.length === 0 && !loading)
-      ? <Alert variant='info'>You have no todos</Alert>
+      ? <Alert variant='info'>{filterEmptyMessages[filter] ?? 'You have no todos'}</Alert>
       : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={todos.map(t => t.id)} strategy={verticalListSortingStrategy}>
             <ul className='list-group'>
-              {todos && todos.map(todo => <TodoListItem key={todo.id} initialTodo={todo} />)}
+              {todos && todos.map(todo => (
+                <TodoListItem
+                  key={todo.id}
+                  initialTodo={todo}
+                  draggable={draggableFilters.has(filter)}
+                />
+              ))}
             </ul>
           </SortableContext>
         </DndContext>

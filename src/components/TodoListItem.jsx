@@ -14,7 +14,7 @@ import { useGlobalStore } from '@/stores/globalStore'
 import ConfirmationModal from './ConfirmationModal'
 import { DragHandleIcon } from './Icons'
 
-export default function TodoListItem ({ initialTodo, pomodoro = false }) {
+export default function TodoListItem ({ initialTodo, pomodoro = false, draggable = true }) {
   const [todo, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
 
   const { createActivePomodoro, removeActivePomodoro } = useActivePomodoro()
@@ -24,7 +24,7 @@ export default function TodoListItem ({ initialTodo, pomodoro = false }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isActivePomodo, setIsActivePomodoro] = useState(false)
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: initialTodo.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: initialTodo.id, disabled: !draggable })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -59,7 +59,7 @@ export default function TodoListItem ({ initialTodo, pomodoro = false }) {
 
   return (
     <ListGroupItem as='li' ref={setNodeRef} style={style} onDoubleClick={handleDoubleClick} className='d-flex align-items-center gap-2'>
-      {!pomodoro && (
+      {!pomodoro && draggable && (
         <span
           {...attributes}
           {...listeners}
