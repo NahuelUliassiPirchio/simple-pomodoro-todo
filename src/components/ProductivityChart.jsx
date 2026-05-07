@@ -11,7 +11,8 @@ function CustomTooltip ({ active, payload, label, unit, valueFormatter }) {
       borderRadius: '6px',
       padding: '8px 12px',
       fontSize: '0.85rem'
-    }}>
+    }}
+    >
       <p className='mb-1 fw-semibold'>{label}</p>
       <p className='mb-0'>{display}</p>
     </div>

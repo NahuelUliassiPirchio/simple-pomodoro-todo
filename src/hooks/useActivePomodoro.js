@@ -1,4 +1,3 @@
-import React from 'react'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { setData, updateData } from '@/services/dbService'
 import { useActivePomodoroTodoStore } from '@/stores/globalStore'
