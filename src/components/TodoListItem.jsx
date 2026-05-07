@@ -6,13 +6,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import useTodo from '@/hooks/useTodo'
 
-import crucialIcon from '../../public/icons/crucial.svg'
-import crucialActiveIcon from '../../public/icons/crucial-active.svg'
 import IconButton from './IconButton'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
 import { useGlobalStore } from '@/stores/globalStore'
 import ConfirmationModal from './ConfirmationModal'
-import { DragHandleIcon } from './Icons'
+import { DragHandleIcon, PomodoroIcon, CrucialIcon, CrucialActiveIcon } from './Icons'
 
 export default function TodoListItem ({ initialTodo, pomodoro = false, draggable = true }) {
   const [todo, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
@@ -116,8 +114,8 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
           !pomodoro
             ? (
               <>
-                <IconButton srcIcon='/icons/pomodoro.svg' handleClick={handlePomodoro} info='Pomodoro this task' />
-                <IconButton srcIcon={todo.crucial ? crucialActiveIcon : crucialIcon} info='Make todo crucial' handleClick={() => handleSave({ crucial: !todo.crucial })} />
+                <IconButton icon={<PomodoroIcon />} handleClick={handlePomodoro} info='Pomodoro this task' />
+                <IconButton icon={todo.crucial ? <CrucialActiveIcon /> : <CrucialIcon />} info='Make todo crucial' handleClick={() => handleSave({ crucial: !todo.crucial })} />
                 <Button variant='primary' onClick={handleEdit} disabled={todo.completed}>Edit</Button>
                 <Button variant='danger' className='me-2' onClick={handleDelete}>Delete</Button>
               </>

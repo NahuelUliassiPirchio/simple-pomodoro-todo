@@ -1,14 +1,26 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Button, Form, Row, Spinner } from 'react-bootstrap'
 import { toast } from 'sonner'
 import { addData } from '@/services/dbService'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useGlobalStore, useSignInStore } from '@/stores/globalStore'
 
+const PLACEHOLDERS = [
+  'What needs to be done?',
+  'Add a new task...',
+  "What's on your mind?",
+  'e.g. Buy groceries, Call dentist...'
+]
+
 export default function NewTodo () {
   const todoRef = useRef()
+  const [placeholderIndex, setPlaceholderIndex] = useState(() => Math.floor(Math.random() * PLACEHOLDERS.length))
+
+  const rotatePlaceholder = () => {
+    setPlaceholderIndex(i => (i + 1) % PLACEHOLDERS.length)
+  }
 
   const { user, loading } = useAuthContext()
   const { setNewTodo } = useGlobalStore()
@@ -33,6 +45,7 @@ export default function NewTodo () {
       setNewTodo(newTodo)
 
       todoRef.current.value = ''
+      rotatePlaceholder()
     } catch (error) {
       toast.error('Failed to create todo, please try again.')
     }
@@ -41,7 +54,7 @@ export default function NewTodo () {
   return (
     <Form className='container mt-3 mb-3'>
       <Row>
-        <Form.Control type='text' className='form-control me-3 col col-lg-11"' placeholder='Todo' ref={todoRef} />
+        <Form.Control type='text' className='form-control me-3 col col-lg-11"' placeholder={PLACEHOLDERS[placeholderIndex]} ref={todoRef} />
         <Button variant='primary' className='col col-lg-1' type='submit' onClick={handleSubmit}>
           {
             loading

@@ -15,6 +15,7 @@ export default function useTodo (initialTodo, pomodoro) {
       setTodo(null)
     } catch (error) {
       toast.error('Failed to delete todo, please try again.')
+      console.error(error)
     }
   }
 
@@ -46,6 +47,8 @@ export default function useTodo (initialTodo, pomodoro) {
       return
     }
 
+    if (!todo) return
+
     const updateTodo = async () => {
       try {
         await updateData(`users/${user.uid}/todos`, todo.id, {
@@ -55,6 +58,7 @@ export default function useTodo (initialTodo, pomodoro) {
         })
       } catch (error) {
         toast.error('Failed to update todo, please try again.')
+        console.error(error)
       }
     }
     updateTodo()
