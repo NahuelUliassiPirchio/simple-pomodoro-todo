@@ -47,7 +47,7 @@ export default function useTodo (initialTodo, pomodoro) {
       return
     }
 
-    if (!todo) return
+    if (!todo || !user) return
 
     const updateTodo = async () => {
       try {
@@ -55,6 +55,7 @@ export default function useTodo (initialTodo, pomodoro) {
           text: todo.text,
           completed: todo.completed,
           crucial: todo.crucial,
+          project: todo.project ?? null,
           ...(todo.completed && { completedAt: todo.completedAt || new Date().toISOString() })
         })
       } catch (error) {

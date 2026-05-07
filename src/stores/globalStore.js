@@ -43,6 +43,29 @@ export const useFiltersStore = create(
   )
 )
 
+export const useProjectsStore = create(
+  persist(
+    (set) => ({
+      availableProjects: [],
+      selectedProjects: [],
+      setAvailableProjects: (projects) => set({ availableProjects: projects }),
+      toggleProject: (projectName) => set(state => ({
+        selectedProjects: state.selectedProjects.includes(projectName)
+          ? state.selectedProjects.filter(p => p !== projectName)
+          : [...state.selectedProjects, projectName]
+      })),
+      clearSelectedProjects: () => set({ selectedProjects: [] }),
+      removeProjectFromSelected: (projectName) => set(state => ({
+        selectedProjects: state.selectedProjects.filter(p => p !== projectName)
+      }))
+    }),
+    {
+      name: 'projects-storage',
+      partialize: state => ({ selectedProjects: state.selectedProjects })
+    }
+  )
+)
+
 export const useActivePomodoroTodoStore = create((set) => ({
   activePomodoroTodo: null,
   updateActivePomodoroTodo: (pomodoro) => set({ activePomodoroTodo: pomodoro })

@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { Badge, Button, CloseButton, Form, ListGroupItem } from 'react-bootstrap'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -8,19 +8,22 @@ import useTodo from '@/hooks/useTodo'
 
 import IconButton from './IconButton'
 import useActivePomodoro from '@/hooks/useActivePomodoro'
-import { useGlobalStore } from '@/stores/globalStore'
+import { useGlobalStore, useProjectsStore } from '@/stores/globalStore'
 import ConfirmationModal from './ConfirmationModal'
 import { DragHandleIcon, PomodoroIcon, CrucialIcon, CrucialActiveIcon } from './Icons'
 
-export default function TodoListItem ({ initialTodo, pomodoro = false, draggable = true }) {
+export default function TodoListItem ({ initialTodo, pomodoro = false, draggable = true, onTodoChange }) {
   const [todo, showEdit, handleEdit, handleDelete, handleSave] = useTodo(initialTodo, pomodoro)
 
   const { createActivePomodoro, removeActivePomodoro } = useActivePomodoro()
   const { setNewTodo } = useGlobalStore()
+  const availableProjects = useProjectsStore(state => state.availableProjects)
 
   const checkboxId = useId()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isActivePomodo, setIsActivePomodoro] = useState(false)
+  const textEditRef = useRef()
+  const projectEditRef = useRef()
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: initialTodo.id, disabled: !draggable })
 
@@ -31,9 +34,7 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
     zIndex: isDragging ? 1 : 'auto'
   }
 
-  const handleCloseModal = () => {
-    setShowDeleteModal(false)
-  }
+  const handleCloseModal = () => setShowDeleteModal(false)
 
   const handleDoubleClick = () => {
     if (todo.completed) return
@@ -43,7 +44,6 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
   const handlePomodoro = async () => {
     if (todo.completed) return
     await createActivePomodoro(todo)
-
     setIsActivePomodoro(true)
   }
 
@@ -51,6 +51,15 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
     await removeActivePomodoro()
     setShowDeleteModal(false)
     setNewTodo(todo)
+  }
+
+  const saveEdit = () => {
+    const changes = {
+      text: textEditRef.current.value,
+      project: projectEditRef.current?.value || null
+    }
+    handleSave(changes)
+    onTodoChange?.({ ...todo, ...changes })
   }
 
   if (!todo || isActivePomodo) return null
@@ -75,44 +84,61 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
             checked={todo.completed}
             onChange={async () => {
               handleSave({ completed: !todo.completed })
-              if (pomodoro) {
-                handleClosePomodoro()
-              }
+              if (pomodoro) handleClosePomodoro()
             }}
           />
-          {
-            showEdit
-              ? <Form.Control
-                  type='text' autoFocus defaultValue={todo.text}
-                  onBlur={handleEdit}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      handleSave({
-                        text: e.target.value
-                      })
-                    }
-                  }}
-                />
-
-              : <Form.Check.Label className={todo.completed && 'text-decoration-line-through'}>{todo.text}</Form.Check.Label>
-          }
+          {showEdit
+            ? (
+              <Form.Control
+                ref={textEditRef}
+                type='text'
+                autoFocus
+                defaultValue={todo.text}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') saveEdit()
+                  if (e.key === 'Escape') handleEdit()
+                }}
+              />
+              )
+            : (
+              <Form.Check.Label className={todo.completed && 'text-decoration-line-through'}>
+                {todo.text}
+              </Form.Check.Label>
+              )}
           <Form.Control.Feedback type='valid'>
             {todo.completed && 'You did it!'}
           </Form.Control.Feedback>
         </Form.Check>
+        {showEdit && (
+          <Form.Select
+            ref={projectEditRef}
+            defaultValue={todo.project || ''}
+            size='sm'
+            className='mt-1'
+          >
+            <option value=''>No project</option>
+            {availableProjects.map(p => (
+              <option key={p.id} value={p.name}>{p.name}</option>
+            ))}
+          </Form.Select>
+        )}
       </div>
 
       <div className='d-flex gap-2 align-items-center flex-shrink-0'>
-        {
-          todo.pomodoros && (
-            <span>
-              <Badge bg='success'>{`${todo.pomodoros} Pomodoro${todo.pomodoros > 1 && 's'} completed`}</Badge>
-            </span>
-          )
-        }
-        {
-          !pomodoro
+        {todo.pomodoros && (
+          <span>
+            <Badge bg='success'>{`${todo.pomodoros} Pomodoro${todo.pomodoros > 1 ? 's' : ''} completed`}</Badge>
+          </span>
+        )}
+        {!pomodoro
+          ? showEdit
             ? (
+              <>
+                <Button variant='success' size='sm' onClick={saveEdit}>Save</Button>
+                <Button variant='secondary' size='sm' className='me-2' onClick={handleEdit}>Cancel</Button>
+              </>
+              )
+            : (
               <>
                 <IconButton icon={<PomodoroIcon />} handleClick={handlePomodoro} info='Pomodoro this task' />
                 <IconButton icon={todo.crucial ? <CrucialActiveIcon /> : <CrucialIcon />} info='Make todo crucial' handleClick={() => handleSave({ crucial: !todo.crucial })} />
@@ -120,23 +146,20 @@ export default function TodoListItem ({ initialTodo, pomodoro = false, draggable
                 <Button variant='danger' className='me-2' onClick={handleDelete}>Delete</Button>
               </>
               )
-            : (
-              <CloseButton onClick={() => setShowDeleteModal(true)} />
-              )
-        }
+          : (
+            <CloseButton onClick={() => setShowDeleteModal(true)} />
+            )}
       </div>
 
-      {
-        showDeleteModal && (
-          <ConfirmationModal
-            title='Delete Todo from Pomodoro?'
-            message={'Hey! You\'re going to lose the pomodoro progress. Are you sure?'}
-            onCancel={handleCloseModal}
-            onConfirm={handleClosePomodoro}
-            confirmationMessage='Delete'
-          />
-        )
-      }
+      {showDeleteModal && (
+        <ConfirmationModal
+          title='Delete Todo from Pomodoro?'
+          message="Hey! You're going to lose the pomodoro progress. Are you sure?"
+          onCancel={handleCloseModal}
+          onConfirm={handleClosePomodoro}
+          confirmationMessage='Delete'
+        />
+      )}
     </ListGroupItem>
   )
 }

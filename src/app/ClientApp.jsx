@@ -7,6 +7,7 @@ import NavBar from '@/components/NavBar'
 import TodoList from '@/components/TodoList'
 import NewTodo from '@/components/NewTodo'
 import Filters from '@/components/Filters'
+import ProjectFilter from '@/components/ProjectFilter'
 import PomodoroTimer from '@/components/PomodoroTimer'
 import ErrorBoundary from '@/utils/ErrorBoundary'
 import ThemeProvider from '@/components/ThemeProvider'
@@ -22,6 +23,7 @@ function AppContent () {
           <ErrorBoundary>
             <NewTodo />
             <Filters />
+            <ProjectFilter />
             <PomodoroTimer />
             <TodoList />
           </ErrorBoundary>
