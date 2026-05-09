@@ -71,7 +71,7 @@ export default function NewTodo () {
             placeholder={PLACEHOLDERS[placeholderIndex]}
             ref={todoRef}
             style={{ flex: 1 }}
-            onFocus={() => availableProjects.length > 0 && setShowProjectSelect(true)}
+            onFocus={() => setShowProjectSelect(true)}
           />
           {showProjectSelect && (
             <Form.Select

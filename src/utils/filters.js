@@ -30,6 +30,7 @@ export const filterEmptyMessages = {
 export const draggableFilters = new Set(['none', 'crucial', 'completed', 'notCompleted'])
 
 export function formatFilterName (filter) {
+  if (filter === 'none') return 'All'
   filter = filter.replace(/([A-Z])/g, ' $1')
   return filter.charAt(0).toUpperCase() + filter.slice(1)
 }

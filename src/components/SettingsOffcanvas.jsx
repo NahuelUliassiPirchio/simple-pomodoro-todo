@@ -41,7 +41,7 @@ function TimerSetting ({ label, color, value, min, max, onChange }) {
 }
 
 export default function SettingsOffcanvas ({ show, onHide }) {
-  const { workTime, restTime, setWorkTime, setRestTime } = useSettingsStore()
+  const { workTime, restTime, setWorkTime, setRestTime, autoAdvance, toggleAutoAdvance } = useSettingsStore()
 
   return (
     <Offcanvas show={show} onHide={onHide} placement='end'>
@@ -69,6 +69,17 @@ export default function SettingsOffcanvas ({ show, onHide }) {
         <p className='text-muted small mt-2'>
           Changes take effect on the next session start.
         </p>
+
+        <hr />
+        <p className='text-muted small text-uppercase fw-semibold mb-3'>⚙️ Behavior</p>
+        <Form.Check
+          type='switch'
+          id='auto-advance-switch'
+          label='Auto-advance between phases'
+          checked={autoAdvance}
+          onChange={toggleAutoAdvance}
+          className='user-select-none'
+        />
       </Offcanvas.Body>
     </Offcanvas>
   )

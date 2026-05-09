@@ -7,9 +7,11 @@ export const useSettingsStore = create(
       isDark: false,
       workTime: 25,
       restTime: 5,
+      autoAdvance: false,
       toggleDark: () => set(state => ({ isDark: !state.isDark })),
       setWorkTime: (workTime) => set({ workTime }),
-      setRestTime: (restTime) => set({ restTime })
+      setRestTime: (restTime) => set({ restTime }),
+      toggleAutoAdvance: () => set(state => ({ autoAdvance: !state.autoAdvance }))
     }),
     { name: 'settings-storage' }
   )

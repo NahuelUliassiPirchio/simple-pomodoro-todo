@@ -2,11 +2,18 @@
 
 import useCountdown from '@/hooks/useCountdown'
 import { formatCounterDigit } from '@/utils/counterFormatter'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Button, Container } from 'react-bootstrap'
 
-export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isResting, startRunningAt }) {
-  const { minutes, seconds, isRunning, pauseTimer, resetTimer, startTimer } = useCountdown(initialTimeInS, onTimeUp)
+export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isResting, startRunningAt, onSkip, autoStartTrigger }) {
+  const justFinishedRef = useRef(false)
+  const onTimeUpRef = useRef(onTimeUp)
+  useEffect(() => { onTimeUpRef.current = onTimeUp }, [onTimeUp])
+
+  const { minutes, seconds, isRunning, pauseTimer, resetTimer, startTimer } = useCountdown(
+    initialTimeInS,
+    () => { justFinishedRef.current = true; onTimeUpRef.current() }
+  )
 
   useEffect(() => {
     if (startRunningAt) {
@@ -15,6 +22,12 @@ export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isRest
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startRunningAt])
+
+  useEffect(() => {
+    if (!autoStartTrigger) return
+    startTimer()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStartTrigger])
 
   useEffect(() => {
     const saveState = () => {
@@ -31,9 +44,16 @@ export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isRest
 
     return () => {
       window.removeEventListener('beforeunload', saveState)
-      if (isRunning) saveState()
+      if (isRunning && !justFinishedRef.current) saveState()
+      justFinishedRef.current = false
     }
   }, [isRunning, seconds, minutes, isResting])
+
+  useEffect(() => {
+    const phase = isResting ? 'Resting' : 'Working'
+    document.title = `${formatCounterDigit(minutes)}:${formatCounterDigit(seconds)} | ${phase}`
+    return () => { document.title = 'Pomodoro' }
+  }, [minutes, seconds, isResting])
 
   const handleStart = (e) => {
     notifyMe()
@@ -50,6 +70,7 @@ export default function Timer ({ initialTimeInS = 0, onTimeUp = () => {}, isRest
       <Container className='d-flex flex-row justify-content-center gap-2'>
         <Button onClick={isRunning ? pauseTimer : handleStart}>{isRunning ? 'Pause' : 'Start'}</Button>
         <Button onClick={handleReset}>Reset</Button>
+        {isResting && <Button variant='' className='border-0 bg-transparent text-body fs-3 p-1 lh-1 btn-skip' title='Skip rest' onClick={onSkip}>⏭</Button>}
       </Container>
     </section>
   )

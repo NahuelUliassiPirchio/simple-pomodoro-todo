@@ -59,12 +59,17 @@ export default function useTodo (initialTodo, pomodoro) {
           ...(todo.completed && { completedAt: todo.completedAt || new Date().toISOString() })
         })
       } catch (error) {
-        toast.error('Failed to update todo, please try again.')
-        console.error(error)
+        if (error.code === 'not-found') {
+          setTodo(null)
+        } else {
+          toast.error('Failed to update todo, please try again.')
+          console.error(error)
+        }
       }
     }
     updateTodo()
-  }, [todo, user, initialTodo])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todo, user])
 
   return [todo, showEdit, handleEdit, handleDelete, handleSave]
 }

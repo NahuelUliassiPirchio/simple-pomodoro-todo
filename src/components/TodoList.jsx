@@ -125,6 +125,7 @@ function sortGroupEntries (entries) {
 export default function TodoList () {
   const [todos, setTodos] = useState([])
   const [collapsedGroups, setCollapsedGroups] = useState(new Set())
+  const [expandedCompletedGroups, setExpandedCompletedGroups] = useState(new Set())
 
   const { user, loading } = useAuthContext()
   const newTodo = useGlobalStore(state => state.newTodo)
@@ -147,8 +148,7 @@ export default function TodoList () {
         const activePomodoroIndex = fetched.findIndex(todo => todo.id === 'activePomodoro')
         if (activePomodoroIndex !== -1) {
           const activePomodoroId = fetched.splice(activePomodoroIndex, 1)[0].text
-          const activePomodoroTodoIndex = fetched.findIndex(todo => todo.id === activePomodoroId)
-          const activePomodoro = activePomodoroTodoIndex !== -1 && fetched.splice(activePomodoroTodoIndex, 1)[0]
+          const activePomodoro = fetched.find(todo => todo.id === activePomodoroId) ?? null
           updateActivePomodoro(activePomodoro)
         }
 
@@ -180,13 +180,21 @@ export default function TodoList () {
     setTodos(prev => prev.map(t => t.id === updatedTodo.id ? updatedTodo : t))
   }
 
-  const toggleGroupCollapse = (projectKey) => {
+  const toggleGroupCollapse = (projectKey, allCompleted) => {
     const storeKey = projectKey ?? '__none__'
-    setCollapsedGroups(prev => {
-      const next = new Set(prev)
-      next.has(storeKey) ? next.delete(storeKey) : next.add(storeKey)
-      return next
-    })
+    if (allCompleted) {
+      setExpandedCompletedGroups(prev => {
+        const next = new Set(prev)
+        next.has(storeKey) ? next.delete(storeKey) : next.add(storeKey)
+        return next
+      })
+    } else {
+      setCollapsedGroups(prev => {
+        const next = new Set(prev)
+        next.has(storeKey) ? next.delete(storeKey) : next.add(storeKey)
+        return next
+      })
+    }
   }
 
   const handleGroupReorder = async (projectKey, reorderedGroup) => {
@@ -227,18 +235,25 @@ export default function TodoList () {
 
   return (
     <div>
-      {visibleEntries.map(([key, groupTodos]) => (
-        <ProjectGroup
-          key={key ?? '__none__'}
-          name={key}
-          todos={groupTodos}
-          onReorder={handleGroupReorder}
-          draggable={draggableFilters.has(filter)}
-          collapsed={collapsedGroups.has(key ?? '__none__')}
-          onToggleCollapse={() => toggleGroupCollapse(key)}
-          onTodoChange={handleTodoChange}
-        />
-      ))}
+      {visibleEntries.map(([key, groupTodos]) => {
+        const storeKey = key ?? '__none__'
+        const allCompleted = groupTodos.length > 0 && groupTodos.every(t => t.completed)
+        const collapsed = allCompleted
+          ? !expandedCompletedGroups.has(storeKey)
+          : collapsedGroups.has(storeKey)
+        return (
+          <ProjectGroup
+            key={storeKey}
+            name={key}
+            todos={groupTodos}
+            onReorder={handleGroupReorder}
+            draggable={draggableFilters.has(filter)}
+            collapsed={collapsed}
+            onToggleCollapse={() => toggleGroupCollapse(key, allCompleted)}
+            onTodoChange={handleTodoChange}
+          />
+        )
+      })}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Container } from 'react-bootstrap'
 import { toast } from 'sonner'
 import Timer from './Timer'
@@ -8,16 +8,25 @@ import useActivePomodoro from '@/hooks/useActivePomodoro'
 import { useSettingsStore, useWorkedPomsStore } from '@/stores/globalStore'
 
 export default function PomodoroTimer () {
-  const { workTime, restTime } = useSettingsStore()
+  const { workTime, restTime, autoAdvance } = useSettingsStore()
 
   const [remainingTime, setRemainingTime] = useState(workTime * 60)
   const [isResting, setIsResting] = useState(false)
   const [startRunningAt, setStartRunningAt] = useState(null)
+  const [autoStartTrigger, setAutoStartTrigger] = useState(0)
+
+  // Prevents zustand's async hydration of workTime/restTime from overriding
+  // the isResting state restored from localStorage on page reload.
+  const skipNextSettingsResetRef = useRef(false)
 
   const { activePomodoro, editActivePomodoro, increaseDailyPomodoro } = useActivePomodoro()
   const { increaseWorkedPoms } = useWorkedPomsStore()
 
   useEffect(() => {
+    if (skipNextSettingsResetRef.current) {
+      skipNextSettingsResetRef.current = false
+      return
+    }
     setIsResting(false)
     setRemainingTime(workTime * 60)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,6 +52,8 @@ export default function PomodoroTimer () {
       }
     }
 
+    if (autoAdvance) setAutoStartTrigger(t => t + 1)
+
     const doneAudio = new Audio('/audio/done_audio.mp3')
     doneAudio.play()
 
@@ -65,9 +76,17 @@ export default function PomodoroTimer () {
 
       if (savedAt) {
         const elapsed = Math.floor((Date.now() - parseInt(savedAt)) / 1000)
-        timeInS = Math.max(1, timeInS - elapsed)
+        timeInS = Math.max(0, timeInS - elapsed)
       }
 
+      if (timeInS <= 0) {
+        localStorage.removeItem('time')
+        localStorage.removeItem('isResting')
+        localStorage.removeItem('timerSavedAt')
+        return
+      }
+
+      skipNextSettingsResetRef.current = true
       setIsResting(itWasResting)
       setRemainingTime(itWasResting ? restTime * 60 : workTime * 60)
       setStartRunningAt(timeInS)
@@ -82,7 +101,7 @@ export default function PomodoroTimer () {
   return (
     <Container as='section' className='d-flex flex-column justify-content-center mb-3 text-center'>
       <h1>{isResting ? 'Resting' : 'Working'}</h1>
-      <Timer initialTimeInS={remainingTime} onTimeUp={handleTimeUp} isResting={isResting} startRunningAt={startRunningAt} />
+      <Timer initialTimeInS={remainingTime} onTimeUp={handleTimeUp} isResting={isResting} startRunningAt={startRunningAt} onSkip={handleTimeUp} autoStartTrigger={autoStartTrigger} />
     </Container>
   )
 }
