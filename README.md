@@ -1,34 +1,135 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Simple Pomodoro Todo
 
-## Getting Started
+> A focused productivity app that combines a Pomodoro timer with task management, project organization, and cloud sync.
 
-First, run the development server:
+## 🌐 Live Demo
+
+[simple-pomodoro-todo-up.vercel.app](https://simple-pomodoro-todo-up.vercel.app/)
+
+---
+
+## 📖 About
+
+Simple Pomodoro Todo is a web app designed to help you stay focused and organized using the Pomodoro Technique. You can manage tasks, group them by project, run timed focus sessions linked to specific to-dos, and track your productivity over time through a stats dashboard. Everything syncs in real time via Firebase, so your data is available across devices.
+
+## ✨ Features
+
+- **Pomodoro timer** — configurable work, short break, and long break durations
+- **Task management** — create, complete, delete, and drag-and-drop reorder todos
+- **Project grouping** — organize tasks into projects with an accordion view and per-project CRUD
+- **Multi-select filtering** — filter your task list by one or more projects simultaneously
+- **Productivity stats** — historical charts showing completed pomodoros and tasks over time
+- **Cloud sync** — real-time persistence with Firestore; data available across all your devices
+- **Authentication** — sign in with Google via Firebase Auth
+- **Theme support** — light and dark mode
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| Framework | Next.js 16 |
+| UI Library | React 18 |
+| Language | JavaScript (JSX) |
+| Styling | Bootstrap 5, React-Bootstrap, CSS Modules |
+| State | Zustand |
+| Charts | Recharts |
+| Drag & Drop | @dnd-kit |
+| Backend / DB | Firebase (Firestore) |
+| Auth | Firebase Authentication |
+| Deployment | Vercel |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 20 or higher
+- A Firebase project with Firestore and Authentication enabled
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+git clone https://github.com/NahuelUliassiPirchio/simple-pomodoro-todo.git
+cd simple-pomodoro-todo
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a `.env.local` file at the project root and add your Firebase credentials:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+NEXT_PUBLIC_FIRESTORE_API_KEY=...
+NEXT_PUBLIC_FIRESTORE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIRESTORE_PROJECT_ID=...
+NEXT_PUBLIC_FIRESTORE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIRESTORE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIRESTORE_APP_ID=...
+NEXT_PUBLIC_FIRESTORE_MEASUREMENT_ID=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+---
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/               # Next.js App Router — pages and layouts
+│   └── stats/         # Productivity stats route
+├── components/        # UI components (timer, todo list, charts, modals…)
+├── contexts/          # React context providers (AuthContext)
+├── firebase/          # Firebase config and initialization
+├── hooks/             # Custom hooks (timer, todos, projects, dashboard data)
+├── services/          # Auth and Firestore service layer
+├── stores/            # Zustand global store
+└── utils/             # Formatters, filters, error boundary
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 🖥 Usage
 
-## Deploy on Vercel
+**Development**
+```bash
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Production build**
+```bash
+npm run build
+npm run start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+---
+
+## 📸 Screenshots
+
+**Main view — timer running with tasks grouped by project**
+![Main view](screenshots/app_first_sight.png)
+
+**Creating a task and assigning it to a project**
+![New todo with project](screenshots/new_todo_with_project.png)
+
+**Task filtering and sorting options**
+![Filters](screenshots/filters.png)
+
+**Customizable work and rest durations**
+![Settings](screenshots/settings_duration.png)
+
+**Productivity dashboard with historical charts**
+![Dashboard](screenshots/worked_dashboard.png)
+
+**Sign in with Google or continue as guest**
+![Sign in](screenshots/sign_in_options.png)
+
+---
+
+## 👤 Author
+
+**Nahuel Uliassi Pirchio**
+
+- 🌐 [uliassipirchio.com](https://uliassipirchio.com)
+- 💼 [LinkedIn](https://linkedin.com/in/uliassipirchio)
+- 🐙 [GitHub](https://github.com/NahuelUliassiPirchio)
+- 🗂 [Project on portfolio](https://www.uliassipirchio.com/projects/simple-pomodoro-todo)
